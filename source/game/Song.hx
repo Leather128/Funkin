@@ -3,6 +3,7 @@ package game;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
+import polymod.backends.PolymodAssets;
 #end
 import utilities.CoolUtil;
 import states.PlayState;
@@ -65,7 +66,7 @@ class Song
 		var rawJson:String;
 
 		#if sys
-		rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+		rawJson = PolymodAssets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 		#else
 		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 		#end

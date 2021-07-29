@@ -6,6 +6,7 @@ import flixel.graphics.FlxGraphic;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
+import polymod.backends.PolymodAssets;
 #end
 import openfl.display.BitmapData;
 import flixel.FlxG;
@@ -148,33 +149,37 @@ class Paths
 	#if sys
 	inline static public function getSparrowAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library);
+		var path = pathStyleSYS(key, library, false);
 
-		var imageData = BitmapData.fromFile(path + ".png");
-		var xmlData = File.getContent(path + ".xml");
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
+		var xmlData = PolymodAssets.getText(path + ".xml");
 
 		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
 	}
 
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library);
+		var path = pathStyleSYS(key, library, false);
 
-		var imageData = BitmapData.fromFile(path + ".png");
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
 		var txtData = File.getContent(path + ".txt");
 
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageData, txtData);
 	}
 
 	// path stuff lol for system
-	inline static public function pathStyleSYS(key:String, ?library:String)
+	inline static public function pathStyleSYS(key:String, ?library:String, ?sysEnd:Bool = true)
 	{
 		if(library != null)
 			library = library + "/";
 		else
 			library = "";
 
-		return Sys.getCwd() + "assets/" + library + "images/" + key;
+		return (sysEnd ? Sys.getCwd() : "") + "assets/" + library + "images/" + key;
 	}
 	#end
 }

@@ -1,11 +1,13 @@
 package states;
 
+import utilities.CoolUtil;
 import haxe.macro.Expr.Var;
 import lime.utils.Assets;
 
 #if sys
 import sys.FileSystem;
 import sys.io.File;
+import polymod.backends.PolymodAssets;
 #end
 
 #if discord_rpc
@@ -401,36 +403,6 @@ class StoryMenuState extends MusicBeatState
 		weekSongListText.text = "Tracks\n\n";
 		weekTitleText.text = curGroupWeek.weekTitle;
 
-		/*
-		switch (menuCharacters.members[0].animation.curAnim.name)
-		{
-			case 'senpai':
-				menuCharacters.members[0].offset.set(130, 0);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.4));
-
-			case 'mom':
-				menuCharacters.members[0].offset.set(100, 220);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 0.8));
-
-			case 'pico':
-				menuCharacters.members[0].flipX = true;
-				menuCharacters.members[0].offset.set(150, 100);
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.2));
-
-			case 'spooky':
-				menuCharacters.members[0].offset.set(150, 150);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.3));
-
-			default:
-				menuCharacters.members[0].offset.set(100, 100);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1));
-		}
-		*/
-
 		for (i in curGroupWeek.songs)
 		{
 			weekSongListText.text += i + "\n";
@@ -444,7 +416,7 @@ class StoryMenuState extends MusicBeatState
 	function loadJSON(name:String)
 	{
 		#if sys
-		groups.push(cast Json.parse(File.getContent(Sys.getCwd() + Paths.jsonSYS("week data/" + name)).trim()));
+		groups.push(cast Json.parse(PolymodAssets.getText(Paths.json("week data/" + name)).trim()));
 		#else
 		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name)).trim()));
 		#end
@@ -453,12 +425,11 @@ class StoryMenuState extends MusicBeatState
 	function loadGroups()
 	{
 		#if sys
-		loadJSON("original_weeks");
+		var weeks = CoolUtil.coolTextFilePolymod(Paths.txt("storyWeekList"));
 
-		for(x in FileSystem.readDirectory(Sys.getCwd() + "assets/data/week data"))
+		for(WeekName in weeks)
 		{
-			if(x != "original_weeks.json")
-				loadJSON(x.split(".json")[0]);
+			loadJSON(WeekName);
 		}
 		#else
 		loadJSON("original_weeks");

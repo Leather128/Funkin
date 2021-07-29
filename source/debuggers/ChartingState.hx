@@ -3,6 +3,8 @@ package debuggers;
 #if sys
 import modding.ModdingSound;
 import sys.FileSystem;
+import polymod.fs.PolymodFileSystem;
+import polymod.backends.PolymodAssets;
 #end
 import utilities.Difficulties;
 import game.Song;
@@ -97,8 +99,10 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
-	var characters:Array<String> = [];
+	var characters:Map<String, Array<String>> = new Map<String, Array<String>>();
 	var gridBlackLine:FlxSprite;
+
+	var selected_mod:String = "default";
 
 	override function create()
 	{
@@ -107,16 +111,28 @@ class ChartingState extends MusicBeatState
 			Assets.loadLibrary("shared").onComplete(function (_) { });
 
 		#if sys
-		var folders = FileSystem.readDirectory(Sys.getCwd() + "assets/data/character data");
-
-		for(i in 0...folders.length)
-		{
-			if(FileSystem.exists(Sys.getCwd() + "assets/data/character data/" + folders[i] + "/" + "config.json"))
-				characters.push(folders[i]);
-		}
+		var characterList = CoolUtil.coolTextFilePolymod(Paths.txt('characterList'));
 		#else
-		characters = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 		#end
+
+		for(Text in characterList)
+		{
+			var Properties = Text.split(":");
+
+			var name = Properties[0];
+			var mod = Properties[1];
+
+			var base_array;
+
+			if(characters.get(mod) != null)
+				base_array = characters.get(mod);
+			else
+				base_array = [];
+
+			base_array.push(name);
+			characters.set(mod, base_array);
+		}
 
 		curSection = lastSection;
 
@@ -441,25 +457,27 @@ class ChartingState extends MusicBeatState
 		tab_group_note.name = 'Art Options';
 
 		// CHARS
-		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
 		{
-			_song.player1 = characters[Std.parseInt(character)];
+			_song.player1 = characters.get(selected_mod)[Std.parseInt(character)];
 			updateHeads();
 		});
+
 		player1DropDown.selectedLabel = _song.player1;
 
-		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
 		{
-			_song.gf = characters[Std.parseInt(character)];
-			updateHeads();
+			_song.gf = characters.get(selected_mod)[Std.parseInt(character)];
 		});
+
 		gfDropDown.selectedLabel = _song.gf;
 
-		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
 		{
-			_song.player2 = characters[Std.parseInt(character)];
+			_song.player2 = characters.get(selected_mod)[Std.parseInt(character)];
 			updateHeads();
 		});
+		
 		player2DropDown.selectedLabel = _song.player2;
 
 		// OTHER
@@ -468,9 +486,35 @@ class ChartingState extends MusicBeatState
 		var stageDropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
 		{
 			_song.stage = stages[Std.parseInt(stage)];
-			updateHeads();
 		});
+
 		stageDropDown.selectedLabel = _song.stage;
+
+		var mods:Array<String> = [];
+
+		var iterator = characters.keys();
+
+		while(iterator.hasNext())
+		{
+			mods.push(iterator.next());
+		}
+
+		var modDropDown = new FlxUIDropDownMenu(10, stageDropDown.y + stageDropDown.height + 2, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(mod:String)
+		{
+			selected_mod = mods[Std.parseInt(mod)];
+
+			var character_Data_List = FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true);
+			
+			player1DropDown.setData(character_Data_List);
+			gfDropDown.setData(character_Data_List);
+			player2DropDown.setData(character_Data_List);
+
+			player1DropDown.selectedLabel = _song.player1;
+			gfDropDown.selectedLabel = _song.gf;
+			player2DropDown.selectedLabel = _song.player2;
+		});
+
+		modDropDown.selectedLabel = selected_mod;
 
 		// LABELS
 		var characterLabel = new FlxText(10, 10, 0, "Characters", 9);
@@ -481,7 +525,10 @@ class ChartingState extends MusicBeatState
 		var p2Label = new FlxText(12 + player2DropDown.width, player2DropDown.y, 0, "Player 2", 9);
 		var stageLabel = new FlxText(12 + stageDropDown.width, stageDropDown.y, 0, "Stage", 9);
 
+		var modLabel = new FlxText(12 + modDropDown.width, modDropDown.y, 0, "Current Mod", 9);
+
 		// adding main dropdowns
+		tab_group_note.add(modDropDown);
 		tab_group_note.add(stageDropDown);
 		tab_group_note.add(player2DropDown);
 		tab_group_note.add(gfDropDown);
@@ -495,6 +542,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(gfLabel);
 		tab_group_note.add(p2Label);
 		tab_group_note.add(stageLabel);
+		tab_group_note.add(modLabel);
 
 		// final add
 		UI_box.addGroup(tab_group_note);
@@ -510,8 +558,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(daSong), 1);
 		else
 		{
-			var array =  ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Inst." + Paths.SOUND_EXT);
-			FlxG.sound.music = new ModdingSound().loadByteArray(array);
+			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(daSong)));
 			FlxG.sound.music.persist = true;
 		}
 		#else
@@ -524,10 +571,7 @@ class ChartingState extends MusicBeatState
 			if(Assets.exists(Paths.voices(daSong)))
 				vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 			else
-			{
-				var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Voices." + Paths.SOUND_EXT);
-				vocals = new ModdingSound().loadByteArray(array);
-			}
+				vocals = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.voicesSYS(daSong)));
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 			#end

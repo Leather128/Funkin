@@ -26,6 +26,10 @@ import debuggers.AnimationDebug;
 import openfl.display.Stage;
 #if desktop
 import utilities.Discord.DiscordClient;
+import polymod.backends.PolymodAssets;
+import polymod.fs.PolymodFileSystem;
+import polymod.Polymod;
+import polymod.backends.PolymodAssetLibrary;
 #end
 import game.Section.SwagSection;
 import game.Song.SwagSong;
@@ -78,6 +82,7 @@ import utilities.CoolUtil;
 import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
+import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -806,14 +811,9 @@ class PlayState extends MusicBeatState
 		{
 			#if sys
 			if(Assets.exists(Paths.voices(PlayState.SONG.song)))
-			{
 				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-			}
 			else
-			{
-				var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Voices." + Paths.SOUND_EXT);
-				vocals = new ModdingSound().loadByteArray(array);
-			}
+				vocals = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.voicesSYS(PlayState.SONG.song)));
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 			#end
@@ -823,10 +823,9 @@ class PlayState extends MusicBeatState
 
 		// LOADING MUSIC FOR CUSTOM SONGS
 		#if sys
-		if(!Assets.exists(Paths.inst(PlayState.SONG.song)))
+		if(FlxG.sound.music == null)
 		{
-			var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Inst." + Paths.SOUND_EXT);
-			FlxG.sound.music = new ModdingSound().loadByteArray(array);
+			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
 			FlxG.sound.music.persist = true;
 		}
 		#end
