@@ -1,5 +1,6 @@
 package states;
 
+import lime.app.Application;
 import utilities.CoolUtil;
 import haxe.macro.Expr.Var;
 import lime.utils.Assets;
@@ -72,6 +73,9 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		// UPDATE TITLE WINDOW JUST IN CASE LOL //
+		Application.current.window.title = Application.current.meta.get('name');
+
 		// SETUP THE GROUPS //
 		loadGroups();
 

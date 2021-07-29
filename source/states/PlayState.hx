@@ -1,5 +1,6 @@
 package states;
 
+import lime.app.Application;
 import utilities.NoteVariables;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.input.keyboard.FlxKeyList;
@@ -570,6 +571,9 @@ class PlayState extends MusicBeatState
 					startCountdown();
 			}
 		}
+
+		// WINDOW TITLE POG
+		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
 		super.create();
 	}
@@ -1194,8 +1198,10 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		var icon_Zoom_Lerp = 0.09;
+
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, icon_Zoom_Lerp / (120 / 60))));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, icon_Zoom_Lerp / (120 / 60))));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

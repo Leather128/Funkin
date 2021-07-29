@@ -1,5 +1,6 @@
 package states;
 
+import lime.app.Application;
 import utilities.Ratings.SongRank;
 import openfl.utils.ByteArray;
 import modding.ModdingSound;
@@ -62,6 +63,8 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		Application.current.window.title = Application.current.meta.get('name');
+		
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
 		if(!songsReady)
