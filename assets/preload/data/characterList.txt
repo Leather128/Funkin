@@ -1,6 +1,4 @@
-bf:default
 dad:default
-gf:default
 gf-old:default
 spooky:default
 pico:default

@@ -153,7 +153,7 @@ class StoryMenuState extends MusicBeatState
 		weekTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		weekTitleText.alpha = 0.7;
 
-		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, FlxColor.WHITE);
 
 		weekGraphics = new FlxTypedGroup<MenuItem>();
 		add(weekGraphics);
@@ -354,7 +354,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			item.targetY = bullShit - curWeek;
 
-			if (item.targetY == Std.int(0))
+			if (item.targetY == 0)
 				item.alpha = 1;
 			else
 				item.alpha = 0.6;
@@ -415,14 +415,27 @@ class StoryMenuState extends MusicBeatState
 		weekSongListText.screenCenter(X);
 		weekSongListText.x -= FlxG.width * 0.35;
 		weekSongListText.text = weekSongListText.text.toUpperCase();
+
+		var bgColor = FlxColor.WHITE;
+
+		if(curGroupWeek.backgroundColor != null)
+		{
+			var arrayColor = curGroupWeek.backgroundColor;
+
+			bgColor = FlxColor.fromRGB(arrayColor[0], arrayColor[1], arrayColor[2]);
+		}
+		else
+			bgColor = FlxColor.fromRGB(249, 207, 81);
+
+		yellowBG.color = bgColor;
 	}
 
 	function loadJSON(name:String)
 	{
 		#if sys
-		groups.push(cast Json.parse(PolymodAssets.getText(Paths.json("week data/" + name)).trim()));
+		groups.push(cast Json.parse(PolymodAssets.getText(Paths.json("week data/" + name))));
 		#else
-		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name)).trim()));
+		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name))));
 		#end
 	}
 
@@ -456,4 +469,6 @@ typedef StoryWeek =
 	var songs:Array<String>;
 	var characters:Array<String>;
 	var weekTitle:String;
+
+	var backgroundColor:Array<Int>;
 }

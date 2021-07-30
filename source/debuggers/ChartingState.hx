@@ -456,8 +456,16 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Art Options';
 
+		var arrayCharacters = ["bf","gf"];
+		var tempCharacters = characters.get(selected_mod);
+
+		for(Item in tempCharacters)
+		{
+			arrayCharacters.push(Item);
+		}
+
 		// CHARS
-		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
+		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.player1 = characters.get(selected_mod)[Std.parseInt(character)];
 			updateHeads();
@@ -465,14 +473,14 @@ class ChartingState extends MusicBeatState
 
 		player1DropDown.selectedLabel = _song.player1;
 
-		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
+		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.gf = characters.get(selected_mod)[Std.parseInt(character)];
 		});
 
 		gfDropDown.selectedLabel = _song.gf;
 
-		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.player2 = characters.get(selected_mod)[Std.parseInt(character)];
 			updateHeads();
@@ -502,6 +510,14 @@ class ChartingState extends MusicBeatState
 		var modDropDown = new FlxUIDropDownMenu(10, stageDropDown.y + stageDropDown.height + 2, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(mod:String)
 		{
 			selected_mod = mods[Std.parseInt(mod)];
+
+			var arrayCharacters = ["bf","gf"];
+			var tempCharacters = characters.get(selected_mod);
+			
+			for(Item in tempCharacters)
+			{
+				arrayCharacters.push(Item);
+			}
 
 			var character_Data_List = FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true);
 			
