@@ -382,6 +382,16 @@ class ChartingState extends MusicBeatState
 
 		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear", clearSection);
 
+		var clearLeftSectionButton:FlxButton = new FlxButton(clearSectionButton.x + clearSectionButton.width + 2, 150, "Clear Left", function()
+		{
+			clearSectionSide(0);
+		});
+
+		var clearRightSectionButton:FlxButton = new FlxButton(clearSectionButton.x + clearSectionButton.width + 2, 170, "Clear Right", function()
+		{
+			clearSectionSide(1);
+		});
+
 		var swapSectionButton:FlxButton = new FlxButton(10, 170, "Swap section", function()
 		{
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
@@ -443,6 +453,8 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
+		tab_group_section.add(clearLeftSectionButton);
+		tab_group_section.add(clearRightSectionButton);
 		tab_group_section.add(swapSectionButton);
 
 		// final addition
@@ -467,7 +479,7 @@ class ChartingState extends MusicBeatState
 		// CHARS
 		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
-			_song.player1 = characters.get(selected_mod)[Std.parseInt(character)];
+			_song.player1 = arrayCharacters[Std.parseInt(character)];
 			updateHeads();
 		});
 
@@ -475,14 +487,14 @@ class ChartingState extends MusicBeatState
 
 		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
-			_song.gf = characters.get(selected_mod)[Std.parseInt(character)];
+			_song.gf = arrayCharacters[Std.parseInt(character)];
 		});
 
 		gfDropDown.selectedLabel = _song.gf;
 
 		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
-			_song.player2 = characters.get(selected_mod)[Std.parseInt(character)];
+			_song.player2 = arrayCharacters[Std.parseInt(character)];
 			updateHeads();
 		});
 		
@@ -511,15 +523,15 @@ class ChartingState extends MusicBeatState
 		{
 			selected_mod = mods[Std.parseInt(mod)];
 
-			var arrayCharacters = ["bf","gf"];
-			var tempCharacters = characters.get(selected_mod);
+			arrayCharacters = ["bf","gf"];
+			tempCharacters = characters.get(selected_mod);
 			
 			for(Item in tempCharacters)
 			{
 				arrayCharacters.push(Item);
 			}
 
-			var character_Data_List = FlxUIDropDownMenu.makeStrIdLabelArray(characters.get(selected_mod), true);
+			var character_Data_List = FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true);
 			
 			player1DropDown.setData(character_Data_List);
 			gfDropDown.setData(character_Data_List);
@@ -1150,7 +1162,7 @@ class ChartingState extends MusicBeatState
 
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			if (i.strumTime == note.strumTime && i.noteData % _song.keyCount == note.noteData)
 			{
 				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
 			}
@@ -1181,6 +1193,41 @@ class ChartingState extends MusicBeatState
 		_song.notes[curSection].sectionNotes = [];
 
 		updateGrid();
+	}
+
+	function clearSectionSide(side:Int = 0):Void
+	{
+		var removeThese = [];
+
+		for(noteIndex in 0..._song.notes[curSection].sectionNotes.length)
+		{
+			var i = _song.notes[curSection].sectionNotes[noteIndex];
+
+			if(side == 0)
+			{
+				if(i[1] < _song.keyCount)
+				{
+					removeThese.push(i);
+				}
+			}
+			else if(side == 1)
+			{
+				if(i[1] >= _song.keyCount)
+				{
+					removeThese.push(i);
+				}
+			}
+		}
+
+		if(removeThese != [])
+		{
+			for(x in removeThese)
+			{
+				_song.notes[curSection].sectionNotes.remove(x);
+			}
+
+			updateGrid();
+		}
 	}
 
 	function clearSong():Void
