@@ -100,8 +100,6 @@ class MainMenuState extends MusicBeatState
 
 		changeItem();
 
-		openfl.Assets.loadSound(MusicUtilities.GetOptionsMenuMusic());
-
 		super.create();
 	}
 

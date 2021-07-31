@@ -137,6 +137,18 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
 	}
 
+	inline static public function imageSYS(key:String, ?library:String)
+	{
+		var path = pathStyleSYS(key, library);
+
+		trace(path + ".png");
+
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
+		return imageData;
+	}
+
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
 	{
 		var path = pathStyleSYS(key, library);

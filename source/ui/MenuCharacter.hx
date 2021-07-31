@@ -30,7 +30,7 @@ class MenuCharacter extends FlxSprite
 			
 			if(animation.curAnim != null)
 			{
-				animation.stop();
+				animation.curAnim.stop();
 				animation.destroyAnimations();
 			}
 	
