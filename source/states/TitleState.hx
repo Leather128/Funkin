@@ -54,7 +54,7 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		#if desktop
-		var mods = FileSystem.readDirectory(Sys.getCwd() + "mods");
+		var mods = CoolUtil.coolTextFile(Paths.txt("modList"));
 
 		Polymod.init({
 			modRoot:"mods/",

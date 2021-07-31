@@ -79,16 +79,6 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	#if sys
-	inline static public function jsonSYS(key:String, ?library:String)
-	{
-		if(library == null)
-			library = "";
-
-		return 'assets/' + library + (library == "" ? "" : "/") + "data/" + key + ".json";
-	}
-	#end
-
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
@@ -114,18 +104,6 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
-	#if sys
-	inline static public function voicesSYS(song:String)
-	{
-		return 'assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
-	}
-
-	inline static public function instSYS(song:String)
-	{
-		return 'assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
-	}
-	#end
-
 	inline static public function image(key:String, ?library:String)
 	{
 		return getPath('images/$key.png', IMAGE, library);
@@ -149,7 +127,7 @@ class Paths
 	#if sys
 	inline static public function getSparrowAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library, false);
+		var path = pathStyleSYS(key, library);
 
 		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
 		var imageData = BitmapData.fromBytes(imageDataRaw);
@@ -161,7 +139,7 @@ class Paths
 
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library, false);
+		var path = pathStyleSYS(key, library);
 
 		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
 		var imageData = BitmapData.fromBytes(imageDataRaw);
@@ -171,15 +149,30 @@ class Paths
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageData, txtData);
 	}
 
+	inline static public function jsonSYS(key:String, ?library:String)
+	{
+		return pathStyleSYS(key + ".json", library, "data");
+	}
+
+	inline static public function voicesSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+	}
+
+	inline static public function instSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+	}
+
 	// path stuff lol for system
-	inline static public function pathStyleSYS(key:String, ?library:String, ?sysEnd:Bool = true)
+	inline static public function pathStyleSYS(key:String, ?library:String, ?dataType:String = "images")
 	{
 		if(library != null)
 			library = library + "/";
 		else
 			library = "";
 
-		return (sysEnd ? Sys.getCwd() : "") + "assets/" + library + "images/" + key;
+		return "assets/" + library + dataType + "/" + key;
 	}
 	#end
 }

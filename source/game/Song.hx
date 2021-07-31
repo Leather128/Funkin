@@ -61,9 +61,11 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
+		var original_Folder = folder;
+		
 		folder = "song data/" + folder + "/";
 
-		var rawJson:String;
+		var rawJson:String = "";
 
 		#if sys
 		rawJson = PolymodAssets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
@@ -71,16 +73,31 @@ class Song
 		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 		#end
 
-		while (!rawJson.endsWith("}"))
+		if(rawJson != "")
 		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			}
+	
+			return parseJSONshit(rawJson);
 		}
+		else
+		{
+			rawJson = Assets.getText(Paths.json("song data/tutorial/tutorial")).trim();
 
-		return parseJSONshit(rawJson);
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			}
+	
+			return parseJSONshit(rawJson, original_Folder);
+		}
 	}
 
-	public static function parseJSONshit(rawJson:String):SwagSong
+	public static function parseJSONshit(rawJson:String, ?originalSongName:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
@@ -100,6 +117,9 @@ class Song
 					swagShit.keyCount = 9;
 			}
 		}
+
+		if(originalSongName != null)
+			swagShit.song = originalSongName;
 
 		return swagShit;
 	}
