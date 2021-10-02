@@ -204,6 +204,14 @@ class ChartingState extends MusicBeatState
             }
         }
 
+        if (controls.RESET)
+        {
+            Inst_Track.stop();
+
+            if(SONG.needsVoices)
+                Vocal_Track.stop();
+        }
+
         Conductor.songPosition = Inst_Track.time;
 
         updateCurStep();
