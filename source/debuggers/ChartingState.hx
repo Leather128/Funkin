@@ -1,5 +1,6 @@
 package debuggers;
 
+import flixel.math.FlxMath;
 import game.Conductor;
 #if sys
 import polymod.backends.PolymodAssets;
@@ -113,7 +114,18 @@ class ChartingState extends MusicBeatState
             Character_Lists.set(mod, base_array);
         }
 
+        if(PlayState.SONG != null)
+        {
+            SONG = PlayState.SONG;
+            SONG.speed = PlayState.previousScrollSpeedLmao;
+        }
+        else
+            SONG = Song.loadFromJson("tutorial", "tutorial");
+
         FlxG.mouse.visible = true;
+
+        Current_Notes = new FlxTypedGroup<Note>();
+        Current_Sustains = new FlxTypedGroup<FlxSprite>();
 
         updateGrid();
 
@@ -121,13 +133,6 @@ class ChartingState extends MusicBeatState
         Camera_Object.y = Grid_Size * 26;
 
         FlxG.camera.follow(Camera_Object);
-
-        if(PlayState.SONG != null)
-            SONG = PlayState.SONG;
-        else
-            SONG = Song.loadFromJson("tutorial", "tutorial");
-
-        SONG.speed = PlayState.previousScrollSpeedLmao;
 
         loadSong(SONG.song);
 		Conductor.changeBPM(SONG.bpm);
@@ -138,6 +143,9 @@ class ChartingState extends MusicBeatState
         Info_Text.x = FlxG.width - Info_Text.width;
         Info_Text.scrollFactor.set();
         add(Info_Text);
+
+        add(Current_Sustains);
+        add(Current_Notes);
     }
 
     override function update(elapsed:Float)
@@ -195,6 +203,8 @@ class ChartingState extends MusicBeatState
             "Time: " + (Inst_Track.time / 1000) + " / " + (Inst_Track.length / 1000) +
             "\n" + "Cur Beat: " + curBeat +
             "\n" + "Cur Step: " + curStep +
+            "\n" + "Cur Section: " + Cur_Section +
+            "\n" + "BPM: " + Conductor.bpm +
             "\n"
         );
 
@@ -269,6 +279,70 @@ class ChartingState extends MusicBeatState
         Song_Line.screenCenter();
         Song_Line.scrollFactor.set();
         add(Song_Line);
+        
+        Current_Notes.forEach(function(Note:Note) {
+            remove(Note);
+            Note.kill();
+            Note.destroy();
+        });
+
+        Current_Sustains.forEach(function(Sustain:FlxSprite) {
+            remove(Sustain);
+            Sustain.kill();
+            Sustain.destroy();
+        });
+
+        Current_Notes.clear();
+        Current_Sustains.clear();
+
+        Cur_Section = 0;
+
+        var sectionInfo:Array<Dynamic> = SONG.notes[Cur_Section].sectionNotes;
+
+		if (SONG.notes[Cur_Section].changeBPM && SONG.notes[Cur_Section].bpm > 0)
+		{
+			Conductor.changeBPM(SONG.notes[Cur_Section].bpm);
+			FlxG.log.add('CHANGED BPM!');
+		}
+		else
+		{
+			// get last bpm
+			var daBPM:Float = SONG.bpm;
+
+			for (i in 0...Cur_Section)
+				if (SONG.notes[i].changeBPM)
+					daBPM = SONG.notes[i].bpm;
+
+			Conductor.changeBPM(daBPM);
+		}
+
+        for (i in sectionInfo)
+        {
+            var daNoteInfo = i[1];
+            var daStrumTime = i[0];
+            var daSus = i[2];
+
+            var note:Note = new Note(daStrumTime, daNoteInfo % SONG.keyCount);
+            note.sustainLength = daSus;
+
+            note.setGraphicSize(Grid_Size, Grid_Size);
+            note.updateHitbox();
+
+            note.x = Note_Grid.x + Math.floor(daNoteInfo * Grid_Size);
+            note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * SONG.notes[Cur_Section].lengthInSteps)));
+
+            note.rawNoteData = daNoteInfo;
+
+            Current_Notes.add(note);
+
+            if (daSus > 0)
+            {
+                var sustainVis:FlxSprite = new FlxSprite(note.x + (Grid_Size / 2),
+                    note.y + Grid_Size).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, Note_Grid.height)));
+                
+                Current_Sustains.add(sustainVis);
+            }
+        }
     }
 
     function loadSong(daSong:String):Void
@@ -322,5 +396,28 @@ class ChartingState extends MusicBeatState
         };
 
         Inst_Track = FlxG.sound.music;
+    }
+
+    function getYfromStrum(strumTime:Float):Float
+    {
+        return FlxMath.remapToRange(strumTime, 0, ((16 / Conductor.timeScale[1]) * Conductor.timeScale[0]) * Conductor.stepCrochet, Note_Grid.y, Note_Grid.y + Note_Grid.height);
+    }
+
+    function sectionStartTime():Float
+    {
+        var daBPM:Float = SONG.bpm;
+        var daPos:Float = 0;
+
+        for (i in 0...Cur_Section)
+        {
+            if (SONG.notes[i].changeBPM)
+            {
+                daBPM = SONG.notes[i].bpm;
+            }
+
+            daPos += (16 / Conductor.timeScale[1]) * (1000 * (60 / daBPM));
+        }
+
+        return daPos;
     }
 }
