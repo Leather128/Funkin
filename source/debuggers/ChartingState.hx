@@ -131,6 +131,8 @@ class ChartingState extends MusicBeatState
         else
             SONG = Song.loadFromJson("tutorial", "tutorial");
 
+        cleanupSections();
+
         FlxG.mouse.visible = true;
 
         Current_Notes = new FlxTypedGroup<Note>();
@@ -220,12 +222,24 @@ class ChartingState extends MusicBeatState
         Info_Text.x = FlxG.width - Info_Text.width;
     }
 
+    function cleanupSections()
+    {
+        // get rid of bad sections lmao
+        while(sectionStartTime(SONG.notes.length - 1) > Inst_Track.length)
+            SONG.notes.pop();
+    }
+
     function updateGrid()
     {
         var Next_Section = Cur_Section + 1;
 
         if(Next_Section > SONG.notes.length - 1)
             addSection(SONG.notes[Cur_Section].lengthInSteps);
+
+        if(sectionStartTime(Next_Section) > Inst_Track.length)
+            Next_Section = 0;
+
+        cleanupSections();
 
         var Prev_Section = Cur_Section - 1;
 
@@ -483,12 +497,15 @@ class ChartingState extends MusicBeatState
         return FlxMath.remapToRange(strumTime, 0, ((16 / Conductor.timeScale[1]) * Conductor.timeScale[0]) * Conductor.stepCrochet, baseGrid.y, baseGrid.y + baseGrid.height);
     }
 
-    function sectionStartTime():Float
+    function sectionStartTime(?cur_Section:Int):Float
     {
+        if(cur_Section == null)
+            cur_Section = Cur_Section;
+
         var daBPM:Float = SONG.bpm;
         var daPos:Float = 0;
 
-        for (i in 0...Cur_Section)
+        for (i in 0...cur_Section)
         {
             if (SONG.notes[i].changeBPM)
             {
