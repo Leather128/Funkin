@@ -131,8 +131,6 @@ class ChartingState extends MusicBeatState
         else
             SONG = Song.loadFromJson("tutorial", "tutorial");
 
-        cleanupSections();
-
         FlxG.mouse.visible = true;
 
         Current_Notes = new FlxTypedGroup<Note>();
