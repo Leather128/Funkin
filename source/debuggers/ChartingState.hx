@@ -136,8 +136,6 @@ class ChartingState extends MusicBeatState
         Current_Notes = new FlxTypedGroup<Note>();
         Current_Sustains = new FlxTypedGroup<FlxSprite>();
 
-        updateGrid();
-
         Camera_Object.screenCenter(X);
         Camera_Object.y = Grid_Size * 26;
 
@@ -146,6 +144,8 @@ class ChartingState extends MusicBeatState
         loadSong(SONG.song);
 		Conductor.changeBPM(SONG.bpm);
 		Conductor.mapBPMChanges(SONG);
+
+        updateGrid();
 
         Info_Text = new FlxText(0,4,0,"Time: 0.0 / " + (Inst_Track.length / 1000), 20);
         Info_Text.setFormat(null, 20, FlxColor.WHITE, RIGHT);
