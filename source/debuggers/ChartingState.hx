@@ -296,21 +296,21 @@ class ChartingState extends MusicBeatState
             Note_Grid_Below.destroy();
         }
 
-        Note_Grid_Above = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * 8, Grid_Size * SONG.notes[Prev_Section].lengthInSteps);
+        Note_Grid_Above = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * (SONG.keyCount * 2), Grid_Size * SONG.notes[Prev_Section].lengthInSteps);
 
         Note_Grid_Above.screenCenter();
         Note_Grid_Above.color = FlxColor.fromRGB(180, 180, 180);
 
         add(Note_Grid_Above);
 
-        Note_Grid = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * 8, Grid_Size * SONG.notes[Cur_Section].lengthInSteps);
+        Note_Grid = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * (SONG.keyCount * 2), Grid_Size * SONG.notes[Cur_Section].lengthInSteps);
 
         Note_Grid.screenCenter();
         Note_Grid.y = Note_Grid_Above.y + Note_Grid_Above.height;
 
         add(Note_Grid);
 
-        Note_Grid_Below = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * 8, Grid_Size * SONG.notes[Next_Section].lengthInSteps);
+        Note_Grid_Below = FlxGridOverlay.create(Grid_Size, Grid_Size, Grid_Size * (SONG.keyCount * 2), Grid_Size * SONG.notes[Next_Section].lengthInSteps);
 
         Note_Grid_Below.screenCenter();
         Note_Grid_Below.y = Note_Grid.y + Note_Grid.height;
