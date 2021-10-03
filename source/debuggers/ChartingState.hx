@@ -64,15 +64,16 @@ class ChartingState extends MusicBeatState
 
     /* icons lol */
 
-    var Last_Section_Left_Icon:HealthIcon;
-    var Section_Left_Icon:HealthIcon;
-    var Next_Section_Left_Icon:HealthIcon;
+    var P1_Tex:HealthIcon;
+    var P2_Tex:HealthIcon;
+
+    var Section_Left_Icon:FlxSprite;
+    var Next_Section_Left_Icon:FlxSprite;
 
     /* divider between left and right icons lmao */
 
-    var Last_Section_Right_Icon:HealthIcon;
-    var Section_Right_Icon:HealthIcon;
-    var Next_Section_Right_Icon:HealthIcon;
+    var Section_Right_Icon:FlxSprite;
+    var Next_Section_Right_Icon:FlxSprite;
 
     /* stop icons lol */
 
@@ -131,6 +132,9 @@ class ChartingState extends MusicBeatState
         else
             SONG = Song.loadFromJson("tutorial", "tutorial");
 
+        P1_Tex = new HealthIcon(SONG.player1);
+        P2_Tex = new HealthIcon(SONG.player2);
+
         FlxG.mouse.visible = true;
 
         Current_Notes = new FlxTypedGroup<Note>();
@@ -160,19 +164,6 @@ class ChartingState extends MusicBeatState
     override function update(elapsed:Float)
     {
         super.update(elapsed);
-
-        var Previous_Y = Camera_Object.y;
-
-        Camera_Object.y += -1 * (FlxG.mouse.wheel * Grid_Size);
-
-        var Above_Value = Note_Grid_Above.y + Note_Grid_Above.height;
-        var Below_Value = Note_Grid_Below.y;
-
-        if(((Camera_Object.y <= Above_Value && !Inst_Track.playing) || (Camera_Object.y < Above_Value)) && Previous_Y > Camera_Object.y)
-            Camera_Object.y = Below_Value;
-
-        if(Camera_Object.y > Below_Value && Previous_Y < Camera_Object.y)
-            Camera_Object.y = Above_Value;
 
 		if (FlxG.keys.justPressed.ENTER)
         {
@@ -212,6 +203,39 @@ class ChartingState extends MusicBeatState
                 Vocal_Track.stop();
         }
 
+        var Previous_Y = Camera_Object.y;
+        var Above_Value = Note_Grid_Above.y + Note_Grid_Above.height;
+        var Below_Value = Note_Grid_Below.y;
+
+        if(FlxG.mouse.wheel != 0)
+        {
+            var Prev_Playing = Inst_Track.playing;
+
+            if(Prev_Playing)
+                Inst_Track.pause();
+            
+            Inst_Track.time += -1 * (FlxG.mouse.wheel * Grid_Size);
+
+            if(Inst_Track.time < 0)
+                Inst_Track.time = Inst_Track.length;
+
+            if(Inst_Track.time > Inst_Track.length)
+                Inst_Track.time = 0;
+
+            if(SONG.needsVoices)
+                Vocal_Track.time = Inst_Track.time;
+
+            if(Prev_Playing)
+            {
+                Inst_Track.play();
+
+                if(SONG.needsVoices)
+                    Vocal_Track.play();
+            }
+        }
+
+        Camera_Object.y = getYfromStrum((Inst_Track.time - sectionStartTime()) % (Conductor.stepCrochet * SONG.notes[Cur_Section].lengthInSteps));
+
         Conductor.songPosition = Inst_Track.time;
 
         updateCurStep();
@@ -243,7 +267,7 @@ class ChartingState extends MusicBeatState
         if(Next_Section > SONG.notes.length - 1)
             addSection(SONG.notes[Cur_Section].lengthInSteps);
 
-        if(sectionStartTime(Next_Section) > Inst_Track.length)
+        if(sectionStartTime(Next_Section) >= Inst_Track.length)
             Next_Section = 0;
 
         cleanupSections();
@@ -313,41 +337,50 @@ class ChartingState extends MusicBeatState
             Next_Section_Right_Icon.kill();
             Next_Section_Right_Icon.destroy();
         }
-
-        var Char_1 = SONG.player1;
-        var Char_2 = SONG.player2;
         
-        Section_Left_Icon = new HealthIcon(SONG.notes[Cur_Section].mustHitSection ? Char_1 : Char_2);
+        Section_Left_Icon = new FlxSprite();
+        Section_Left_Icon.loadGraphicFromSprite((SONG.notes[Cur_Section].mustHitSection ? P1_Tex : P2_Tex));
 		Section_Left_Icon.scrollFactor.set(1, 1);
 		Section_Left_Icon.setGraphicSize(Grid_Size);
 		Section_Left_Icon.updateHitbox();
         Section_Left_Icon.x = Note_Grid.x - Section_Left_Icon.width;
         Section_Left_Icon.y = Note_Grid.y;
+        Section_Left_Icon.animation.add("char", [0, 1, 2], 0, false, false);
+		Section_Left_Icon.animation.play("char");
 		add(Section_Left_Icon);
 
-        Section_Right_Icon = new HealthIcon(SONG.notes[Cur_Section].mustHitSection ? Char_2 : Char_1);
+        Section_Right_Icon = new FlxSprite();
+        Section_Right_Icon.loadGraphicFromSprite((SONG.notes[Cur_Section].mustHitSection ? P2_Tex : P1_Tex));
         Section_Right_Icon.scrollFactor.set(1, 1);
         Section_Right_Icon.setGraphicSize(Grid_Size);
         Section_Right_Icon.updateHitbox();
         Section_Right_Icon.x = Note_Grid.x + Note_Grid.width;
         Section_Right_Icon.y = Note_Grid.y;
+        Section_Right_Icon.animation.add("char", [0, 1, 2], 0, false, false);
+		Section_Right_Icon.animation.play("char");
 		add(Section_Right_Icon);
 
         /* NEXT SECTION */
-        Next_Section_Left_Icon = new HealthIcon(SONG.notes[Next_Section].mustHitSection ? Char_1 : Char_2);
+        Next_Section_Left_Icon = new FlxSprite();
+        Next_Section_Left_Icon.loadGraphicFromSprite((SONG.notes[Next_Section].mustHitSection ? P1_Tex : P2_Tex));
 		Next_Section_Left_Icon.scrollFactor.set(1, 1);
 		Next_Section_Left_Icon.setGraphicSize(Grid_Size);
 		Next_Section_Left_Icon.updateHitbox();
         Next_Section_Left_Icon.x = Note_Grid_Below.x - Next_Section_Left_Icon.width;
         Next_Section_Left_Icon.y = Note_Grid_Below.y;
+        Next_Section_Left_Icon.animation.add("char", [0, 1, 2], 0, false, false);
+		Next_Section_Left_Icon.animation.play("char");
 		add(Next_Section_Left_Icon);
 
-        Next_Section_Right_Icon = new HealthIcon(SONG.notes[Next_Section].mustHitSection ? Char_2 : Char_1);
+        Next_Section_Right_Icon = new FlxSprite();
+        Next_Section_Right_Icon.loadGraphicFromSprite((SONG.notes[Next_Section].mustHitSection ? P2_Tex : P1_Tex));
         Next_Section_Right_Icon.scrollFactor.set(1, 1);
         Next_Section_Right_Icon.setGraphicSize(Grid_Size);
         Next_Section_Right_Icon.updateHitbox();
         Next_Section_Right_Icon.x = Note_Grid_Below.x + Note_Grid_Below.width;
         Next_Section_Right_Icon.y = Note_Grid_Below.y;
+        Next_Section_Right_Icon.animation.add("char", [0, 1, 2], 0, false, false);
+		Next_Section_Right_Icon.animation.play("char");
 		add(Next_Section_Right_Icon);
 
         /* COOL SHIT */
@@ -417,8 +450,7 @@ class ChartingState extends MusicBeatState
             note.updateHitbox();
 
             note.x = Note_Grid.x + Math.floor(daNoteInfo * Grid_Size);
-            note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime(Cur_Section)) % (Conductor.stepCrochet * SONG.notes[Prev_Section].lengthInSteps), Note_Grid_Above));
-            note.y += Note_Grid.y - Grid_Size;
+            note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime(Prev_Section)) % (Conductor.stepCrochet * SONG.notes[Prev_Section].lengthInSteps), Note_Grid_Above));
 
             note.rawNoteData = daNoteInfo;
 
@@ -474,7 +506,7 @@ class ChartingState extends MusicBeatState
             note.updateHitbox();
 
             note.x = Note_Grid.x + Math.floor(daNoteInfo * Grid_Size);
-            note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime(Cur_Section)) % (Conductor.stepCrochet * SONG.notes[Next_Section].lengthInSteps), Note_Grid_Below));
+            note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime(Next_Section)) % (Conductor.stepCrochet * SONG.notes[Next_Section].lengthInSteps), Note_Grid_Below));
 
             note.rawNoteData = daNoteInfo;
 
