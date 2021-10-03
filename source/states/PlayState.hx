@@ -1493,6 +1493,9 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.save.data.nohit && misses > 0)
+			health = 0;
+
 		if (health <= 0 && !switchedStates)
 		{
 			boyfriend.stunned = true;
@@ -2351,9 +2354,6 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 
 			combo = 0;
-	
-			if (FlxG.save.data.nohit)
-				health = 0;
 
 			if(!note.isSustainNote)
 			{
