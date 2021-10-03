@@ -593,10 +593,8 @@ class ChartingState extends MusicBeatState
 
         for (i in 0...cur_Section)
         {
-            if (SONG.notes[i].changeBPM)
-            {
+            if (SONG.notes[i].changeBPM && SONG.notes[i].bpm != daBPM)
                 daBPM = SONG.notes[i].bpm;
-            }
 
             daPos += (16 / Conductor.timeScale[1]) * (1000 * (60 / daBPM));
         }
