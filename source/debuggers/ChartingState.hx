@@ -313,8 +313,11 @@ class ChartingState extends MusicBeatState
             Next_Section_Right_Icon.kill();
             Next_Section_Right_Icon.destroy();
         }
+
+        var Char_1 = SONG.player1;
+        var Char_2 = SONG.player2;
         
-        Section_Left_Icon = new HealthIcon('bf');
+        Section_Left_Icon = new HealthIcon(SONG.notes[Cur_Section].mustHitSection ? Char_1 : Char_2);
 		Section_Left_Icon.scrollFactor.set(1, 1);
 		Section_Left_Icon.setGraphicSize(Grid_Size);
 		Section_Left_Icon.updateHitbox();
@@ -322,7 +325,7 @@ class ChartingState extends MusicBeatState
         Section_Left_Icon.y = Note_Grid.y;
 		add(Section_Left_Icon);
 
-        Section_Right_Icon = new HealthIcon('dad');
+        Section_Right_Icon = new HealthIcon(SONG.notes[Cur_Section].mustHitSection ? Char_2 : Char_1);
         Section_Right_Icon.scrollFactor.set(1, 1);
         Section_Right_Icon.setGraphicSize(Grid_Size);
         Section_Right_Icon.updateHitbox();
@@ -331,7 +334,7 @@ class ChartingState extends MusicBeatState
 		add(Section_Right_Icon);
 
         /* NEXT SECTION */
-        Next_Section_Left_Icon = new HealthIcon('dad');
+        Next_Section_Left_Icon = new HealthIcon(SONG.notes[Next_Section].mustHitSection ? Char_1 : Char_2);
 		Next_Section_Left_Icon.scrollFactor.set(1, 1);
 		Next_Section_Left_Icon.setGraphicSize(Grid_Size);
 		Next_Section_Left_Icon.updateHitbox();
@@ -339,7 +342,7 @@ class ChartingState extends MusicBeatState
         Next_Section_Left_Icon.y = Note_Grid_Below.y;
 		add(Next_Section_Left_Icon);
 
-        Next_Section_Right_Icon = new HealthIcon('bf');
+        Next_Section_Right_Icon = new HealthIcon(SONG.notes[Next_Section].mustHitSection ? Char_2 : Char_1);
         Next_Section_Right_Icon.scrollFactor.set(1, 1);
         Next_Section_Right_Icon.setGraphicSize(Grid_Size);
         Next_Section_Right_Icon.updateHitbox();
