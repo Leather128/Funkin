@@ -1056,24 +1056,26 @@ class PlayState extends MusicBeatState
 
 			if(SONG.keyCount != 4 && isPlayer)
 			{
-				var keyThingLolShadow = new FlxText((babyArrow.x + (babyArrow.width / 2)) - 20, babyArrow.y - 20, 40, binds[i], 40);
+				var coolWidth = Std.int(40 - ((SONG.keyCount - 5) * 2) + (SONG.keyCount == 10 ? 30 : 0));
+
+				var keyThingLolShadow = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (coolWidth / 2), babyArrow.y - (coolWidth / 2), coolWidth, binds[i], coolWidth);
 				keyThingLolShadow.cameras = [camHUD];
 				keyThingLolShadow.color = FlxColor.BLACK;
 				keyThingLolShadow.scrollFactor.set();
 				add(keyThingLolShadow);
 
-				var keyThingLol = new FlxText(keyThingLolShadow.x - 6, keyThingLolShadow.y - 6, 40, binds[i], 40);
+				var keyThingLol = new FlxText(keyThingLolShadow.x - 6, keyThingLolShadow.y - 6, coolWidth, binds[i], coolWidth);
 				keyThingLol.cameras = [camHUD];
 				keyThingLol.scrollFactor.set();
 				add(keyThingLol);
 
-				FlxTween.tween(keyThingLolShadow, {y: keyThingLolShadow.y + 10, alpha: 0}, 1.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
+				FlxTween.tween(keyThingLolShadow, {y: keyThingLolShadow.y + 10, alpha: 0}, 3, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
 					remove(keyThingLolShadow);
 					keyThingLolShadow.kill();
 					keyThingLolShadow.destroy();
 				}});
 
-				FlxTween.tween(keyThingLol, {y: keyThingLol.y + 10, alpha: 0}, 1.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
+				FlxTween.tween(keyThingLol, {y: keyThingLol.y + 10, alpha: 0}, 3, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
 					remove(keyThingLol);
 					keyThingLol.kill();
 					keyThingLol.destroy();

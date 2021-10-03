@@ -56,6 +56,9 @@ class SaveData {
 
         if(FlxG.save.data.discordRPC == null)
             FlxG.save.data.discordRPC = true;
+
+        if(FlxG.save.data.quickRestart == null)
+            FlxG.save.data.quickRestart = false;
         
         Conductor.offset = FlxG.save.data.songOffset;
 
