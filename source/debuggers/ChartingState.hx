@@ -256,7 +256,7 @@ class ChartingState extends MusicBeatState
     function cleanupSections()
     {
         // get rid of bad sections lmao
-        while(sectionStartTime(SONG.notes.length - 1) > Inst_Track.length)
+        while(sectionStartTime(SONG.notes.length - 1) >= Inst_Track.length)
             SONG.notes.pop();
     }
 
