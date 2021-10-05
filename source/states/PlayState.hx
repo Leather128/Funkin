@@ -174,10 +174,9 @@ class PlayState extends MusicBeatState
 
 	var missSounds:Array<FlxSound> = [];
 
-	public static var arrow_Texture:FlxFramesCollection;
 	public static var splash_Texture:FlxFramesCollection;
 
-	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
+	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = [];
 
 	public static var songMultiplier:Float = 1;
 	public static var previousScrollSpeedLmao:Float = 0;
@@ -189,6 +188,9 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		arrow_Type_Sprites.clear();
+		arrow_Type_Sprites = [];
+
 		if(FlxG.save.data.bot)
 			hasUsedBot = true;
 
@@ -316,9 +318,9 @@ class PlayState extends MusicBeatState
 		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
 
 		if(Assets.exists(Paths.image('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'), IMAGE))
-			arrow_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+			arrow_Type_Sprites.set("default", Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
 		else
-			arrow_Texture = Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+			arrow_Type_Sprites.set("default", Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
 
 		if(Std.parseInt(ui_Settings[6]) == 1)
 		{
@@ -339,8 +341,6 @@ class PlayState extends MusicBeatState
 			splashesSettings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
 			#end
 		}
-
-		arrow_Type_Sprites.set('default', arrow_Texture);
 
 		if(SONG.gf == null)
 		{
@@ -961,7 +961,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3]);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -974,7 +974,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + ((Conductor.nonmultilmao_stepCrochet * susNote) + Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3]);
+					var sustainNote:Note = new Note(daStrumTime + ((Conductor.nonmultilmao_stepCrochet * susNote) + Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1016,7 +1016,7 @@ class PlayState extends MusicBeatState
 		{
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			babyArrow.frames = arrow_Texture;
+			babyArrow.frames = arrow_Type_Sprites.get("default");
 
 			babyArrow.antialiasing = ui_Settings[3] == "true";
 
@@ -1512,14 +1512,14 @@ class PlayState extends MusicBeatState
 			else
 				openSubState(new GameOverSubstate(boyfriend.otherCharacters[0].getScreenPosition().x, boyfriend.otherCharacters[0].getScreenPosition().y));
 			
-			#if desktop
+			#if discord_rpc
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			#end
 
 			#if linc_luajit
 			if(luaModchart != null)
 				luaModchart.executeState('onDeath', [Conductor.songPosition]);
-			#end
 			#end
 		}
 
@@ -1682,6 +1682,7 @@ class PlayState extends MusicBeatState
 				if (daNote.mustPress && !daNote.modifiedByLua)
 				{
 					daNote.visible = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].visible;
+					//daNote.centerOrigin();
 					daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
 
 					if (!daNote.isSustainNote)
@@ -1694,6 +1695,7 @@ class PlayState extends MusicBeatState
 				else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 				{
 					daNote.visible = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].visible;
+					//daNote.centerOrigin();
 					daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
 
 					if (!daNote.isSustainNote)
@@ -1792,6 +1794,9 @@ class PlayState extends MusicBeatState
 					vocals.stop();
 					FlxG.switchState(new StoryMenuState());
 
+					PlayState.arrow_Type_Sprites.clear();
+					arrow_Type_Sprites = [];
+
 					#if linc_luajit
 					if(luaModchart != null)
 					{
@@ -1857,6 +1862,9 @@ class PlayState extends MusicBeatState
 				switchedStates = true;
 				vocals.stop();
 				FlxG.switchState(new FreeplayState());
+
+				PlayState.arrow_Type_Sprites.clear();
+				arrow_Type_Sprites = [];
 
 				// POG FREEPLAY MUSIC????!?!?!??!?!?!?
 				FlxG.sound.music.volume = 1;
@@ -2379,7 +2387,7 @@ class PlayState extends MusicBeatState
 
 			#if linc_luajit
 			if (luaModchart != null)
-				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition]);
+				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, note.arrow_Type]);
 			#end
 		}
 	}
@@ -2405,9 +2413,9 @@ class PlayState extends MusicBeatState
 			if (luaModchart != null)
 			{
 				if(note.isSustainNote)
-					luaModchart.executeState('playerOneSingHeld', [note.noteData, Conductor.songPosition]);
+					luaModchart.executeState('playerOneSingHeld', [note.noteData, Conductor.songPosition, note.arrow_Type]);
 				else
-					luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition]);
+					luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition, note.arrow_Type]);
 			}
 			#end
 
