@@ -1684,31 +1684,32 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				if (daNote.mustPress && !daNote.modifiedByLua)
+				if(daNote != null)
 				{
-					daNote.visible = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].visible;
-					//daNote.centerOrigin();
-					daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
-
-					if (!daNote.isSustainNote)
+					if (daNote.mustPress && !daNote.modifiedByLua)
+					{
+						daNote.visible = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].visible;
+						daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
+	
+						if (!daNote.isSustainNote)
+							daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
+						
+						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+	
 						daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					
-					daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
-
-					daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
-				}
-				else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
-				{
-					daNote.visible = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].visible;
-					//daNote.centerOrigin();
-					daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
-
-					if (!daNote.isSustainNote)
+					}
+					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
+					{
+						daNote.visible = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].visible;
+						daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
+	
+						if (!daNote.isSustainNote)
+							daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
+						
+						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+	
 						daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					
-					daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
-
-					daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
+					}
 				}
 
 				if (daNote.isSustainNote)

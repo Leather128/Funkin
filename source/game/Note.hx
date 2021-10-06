@@ -82,6 +82,9 @@ class Note extends FlxSprite
 		x += swagWidth * noteData;
 		animation.play("default");
 
+		centerOffsets();
+		centerOrigin();
+
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
@@ -110,6 +113,9 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+
+			centerOffsets();
+			centerOrigin();
 		}
 	}
 
