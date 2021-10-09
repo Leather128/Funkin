@@ -59,6 +59,15 @@ class SaveData {
 
         if(FlxG.save.data.quickRestart == null)
             FlxG.save.data.quickRestart = false;
+
+        if(FlxG.save.data.fpsCap == null)
+            FlxG.save.data.fpsCap = 120;
+
+        if(FlxG.save.data.fpsCap > 800)
+            FlxG.save.data.fpsCap = 800;
+
+        if(FlxG.save.data.fpsCap < 10)
+            FlxG.save.data.fpsCap = 10;
         
         Conductor.offset = FlxG.save.data.songOffset;
 

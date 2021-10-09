@@ -66,6 +66,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var storyDifficultyStr:String = "NORMAL";
 
 	var halloweenLevel:Bool = false;
 
@@ -242,17 +243,7 @@ class PlayState extends MusicBeatState
 		Conductor.safeZoneOffset *= songMultiplier;
 
 		#if discord_rpc
-		// Making difficulty text for Discord Rich Presence.
-		switch (storyDifficulty)
-		{
-			case 0:
-				storyDifficultyText = "Easy";
-			case 1:
-				storyDifficultyText = "Normal";
-			case 2:
-				storyDifficultyText = "Hard";
-		}
-
+		storyDifficultyText = storyDifficultyStr;
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -518,7 +509,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
@@ -553,7 +544,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + Std.string(Difficulties.numToDiff(storyDifficulty)) + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
@@ -1172,33 +1163,15 @@ class PlayState extends MusicBeatState
 	{
 		trace("SONG POS: " + Conductor.songPosition + " | Musice: " + FlxG.sound.music.time + " / " + FlxG.sound.music.length);
 
-		if(!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
+		if(!switchedStates)
 		{
-			vocals.pause();
-			FlxG.sound.music.pause();
-	
-			Conductor.songPosition = FlxG.sound.music.time;
-			vocals.time = Conductor.songPosition;
-			FlxG.sound.music.play();
-			vocals.play();
-	
-			#if cpp
-			@:privateAccess
+			if(!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
 			{
-				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-	
-				if (vocals.playing)
-					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-			}
-			#end
-		}
-		else
-		{
-			while(Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
-			{
-				FlxG.sound.music.time = Conductor.songPosition;
+				vocals.pause();
+				FlxG.sound.music.pause();
+		
+				Conductor.songPosition = FlxG.sound.music.time;
 				vocals.time = Conductor.songPosition;
-	
 				FlxG.sound.music.play();
 				vocals.play();
 		
@@ -1211,6 +1184,27 @@ class PlayState extends MusicBeatState
 						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 				}
 				#end
+			}
+			else
+			{
+				while(Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
+				{
+					FlxG.sound.music.time = Conductor.songPosition;
+					vocals.time = Conductor.songPosition;
+		
+					FlxG.sound.music.play();
+					vocals.play();
+			
+					#if cpp
+					@:privateAccess
+					{
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+			
+						if (vocals.playing)
+							lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+					}
+					#end
+				}
 			}
 		}
 	}
@@ -1247,6 +1241,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
 
 		if(totalNotes != 0)
 		{
@@ -1345,8 +1341,8 @@ class PlayState extends MusicBeatState
 
 		var icon_Zoom_Lerp = 0.09;
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
@@ -1777,8 +1773,8 @@ class PlayState extends MusicBeatState
 				#if !switch
 				if(!hasUsedBot && songMultiplier >= 1)
 				{
-					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
+					Highscore.saveScore(SONG.song, songScore, storyDifficultyStr);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficultyStr);
 				}
 				#end
 			}
@@ -1815,19 +1811,16 @@ class PlayState extends MusicBeatState
 					{
 						if(!hasUsedBot && songMultiplier >= 1)
 						{
-							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
+							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficultyStr, (groupWeek != "" ? groupWeek + "Week" : "week"));
 						}
 					}
 				}
 				else
 				{
 					var difficulty:String = "";
-	
-					if (storyDifficulty == 0)
-						difficulty = '-easy';
-	
-					if (storyDifficulty == 2)
-						difficulty = '-hard';
+
+					if (storyDifficultyStr.toLowerCase() != "normal")
+						difficulty = '-' + storyDifficultyStr.toLowerCase();
 	
 					trace('LOADING NEXT SONG');
 					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
@@ -2293,6 +2286,11 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(note:Note) {
 				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.strumTime <= Conductor.songPosition && note.canBeHit && note.mustPress && note.isSustainNote)
 				{
+					if(boyfriend.otherCharacters == null)
+						boyfriend.holdTimer = 0;
+					else
+						boyfriend.otherCharacters[note.character].holdTimer = 0;
+
 					boyfriend.holdTimer = 0;
 
 					goodNoteHit(note);

@@ -37,6 +37,12 @@ class ModchartUtilities
         'dad' => PlayState.dad,
     ];
 
+    public static var lua_Characters:Map<String, Character> = [
+        'boyfriend' => PlayState.boyfriend,
+        'girlfriend' => PlayState.gf,
+        'dad' => PlayState.dad,
+    ];
+
     public static var lua_Sounds:Map<String, FlxSound> = [];
 
 	function getActorByName(id:String):Dynamic
@@ -52,6 +58,15 @@ class ModchartUtilities
         }
 
         return lua_Sprites.get(id);
+    }
+
+    function getCharacterByName(id:String):Dynamic
+    {
+        // lua objects or what ever
+        if(lua_Characters.exists(id))
+            return lua_Characters.get(id);
+        else
+            return null;
     }
 
     function getPropertyByName(id:String)
@@ -118,6 +133,12 @@ class ModchartUtilities
             'girlfriend' => PlayState.gf,
             'dad' => PlayState.dad,
         ];
+
+        lua_Characters = [
+            'boyfriend' => PlayState.boyfriend,
+            'girlfriend' => PlayState.gf,
+            'dad' => PlayState.dad,
+        ];
     
         lua_Sounds = [];
 
@@ -129,23 +150,9 @@ class ModchartUtilities
 
         Lua.init_callbacks(lua);
 
-        var path = Paths.lua("modcharts/" + PlayState.SONG.modchartPath);
+        var path = PolymodAssets.getPath(Paths.lua("modcharts/" + PlayState.SONG.modchartPath));
 
         var result = LuaL.dofile(lua, path); // execute le file
-
-        if(result != 0)
-        {
-            var mods = PolymodHandler.metadataArrays;
-
-            for(x in mods)
-            {
-                if(result != 0)
-                {
-                    path = "mods/" + x + "/" + "data/modcharts/" + PlayState.SONG.modchartPath + ".lua";
-                    result = LuaL.dofile(lua, path); // execute le file
-                }
-            }
-        }
 
         if (result != 0)
         {
@@ -496,6 +503,37 @@ class ModchartUtilities
             getActorByName(id).flipY = flip;
         });
 
+        Lua_helper.add_callback(lua,"setActorTrailVisible", function(id:String,visibleVal:Bool) {
+            var char = getCharacterByName(id);
+
+            if(char != null)
+            {
+                if(char.coolTrail != null)
+                {
+                    char.coolTrail.visible = visibleVal;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return false;
+        });
+
+        Lua_helper.add_callback(lua,"getActorTrailVisible", function(id:String) {
+            var char = getCharacterByName(id);
+
+            if(char != null)
+            {
+                if(char.coolTrail != null)
+                    return char.coolTrail.visible;
+                else
+                    return false;
+            }
+            else
+                return false;
+        });
+
         Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
             return getActorByName(id).width;
         });
@@ -521,8 +559,7 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
-            Application.current.window.x = x;
-            Application.current.window.y = y;
+            Application.current.window.move(x, y);
         });
 
         Lua_helper.add_callback(lua,"getWindowX",function() {
@@ -853,6 +890,7 @@ class ModchartUtilities
             for(char in 0...PlayState.dad.otherCharacters.length)
             {
                 lua_Sprites.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
+                lua_Characters.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
             }
         }
 
@@ -861,6 +899,7 @@ class ModchartUtilities
             for(char in 0...PlayState.boyfriend.otherCharacters.length)
             {
                 lua_Sprites.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
+                lua_Characters.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
             }
         }
 
@@ -869,6 +908,7 @@ class ModchartUtilities
             for(char in 0...PlayState.gf.otherCharacters.length)
             {
                 lua_Sprites.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
+                lua_Characters.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
             }
         }
     }

@@ -26,7 +26,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Bot', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Bot', 'Quick Restart', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -54,7 +54,8 @@ class PauseSubState extends MusicBeatSubstate
 		add(levelInfo);
 
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
-		levelDifficulty.text += CoolUtil.difficultyString();
+		levelDifficulty.text += PlayState.storyDifficultyStr.toUpperCase();
+		levelDifficulty.text += "\nDeaths: " + FlxG.save.data.deaths + "\n";
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, RIGHT);
 		levelDifficulty.updateHitbox();
@@ -123,10 +124,13 @@ class PauseSubState extends MusicBeatSubstate
 
 					@:privateAccess
 					{
-						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)) + (FlxG.save.data.bot ? " (BOT)" : "");
+						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (FlxG.save.data.bot ? " (BOT)" : "");
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
+				case "Quick Restart":
+					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
+					FlxG.save.flush();
 				case "Exit to menu":
 					#if linc_luajit
 					if (PlayState.luaModchart != null)

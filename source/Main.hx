@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxG;
+import ui.SimpleInfoDisplay;
 import ui.MemoryCounter;
 import states.TitleState;
 import flixel.FlxGame;
@@ -65,6 +67,10 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
+		#if !cpp
+		framerate = 60;
+		#end
+
 		#if !debug
 		initialState = TitleState;
 		#end
@@ -72,27 +78,31 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		fpsCounter = new FPS(10, 3, 0xFFFFFF);
-		addChild(fpsCounter);
-
-		memoryCounter = new MemoryCounter(10, 3, 0xffffff);
-		addChild(memoryCounter);
+		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF);
+		addChild(display);
 		#end
-
-		openfl.Lib.current.stage.frameRate = 120;
 	}
 
-	public static var fpsCounter:FPS;
+	public static var display:SimpleInfoDisplay;
 
 	public static function toggleFPS(fpsEnabled:Bool):Void
 	{
-		fpsCounter.visible = fpsEnabled;
+		display.infoDisplayed[0] = fpsEnabled;
 	}
-
-	public static var memoryCounter:MemoryCounter;
 
 	public static function toggleMem(memEnabled:Bool):Void
 	{
-		memoryCounter.visible = memEnabled;
+		display.infoDisplayed[1] = memEnabled;
+	}
+
+	/* cool kade functions D) */
+	public function setFPSCap(cap:Float)
+	{
+		openfl.Lib.current.stage.frameRate = cap;
+	}
+
+	public function getFPSCap():Float
+	{
+		return openfl.Lib.current.stage.frameRate;
 	}
 }
