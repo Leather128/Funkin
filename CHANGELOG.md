@@ -7,6 +7,8 @@ All notable changes will be documented in this file.
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
 - Fixed some errors idk
+### Changed
+- Update Pico offsets
 
 ## [0.3.6] - 11/6/2021
 ### Fixed
