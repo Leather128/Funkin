@@ -7,7 +7,7 @@ All notable changes will be documented in this file.
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
 - Fixed some errors idk
-- Fixed mania mode and death notes doing funny miss stuff?
+- Fixed mania mode and death notes doing funny miss stuff? (copy, sorry Leather)
 ### Changed
 - Update Pico offsets
 
