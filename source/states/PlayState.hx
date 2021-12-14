@@ -553,7 +553,7 @@ class PlayState extends MusicBeatState
 
 				add(character);
 			}
-		}
+		}f
 
 		add(stage.foregroundSprites);
 
@@ -1985,15 +1985,27 @@ class PlayState extends MusicBeatState
 					{
 						if(dad.otherCharacters == null)
 							dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+							if(SONG.player2 == 'your-character')
+							{
+								health -= 0.01;
+							}
 						else
 						{
 							if(daNote.characters.length <= 1)
 								dad.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+								if(SONG.player2 == 'your-character')
+								{
+									health -= 0.01;
+								}
 							else
 							{
 								for(character in daNote.characters)
 								{
 									dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+									if(SONG.player2 == 'your-character')
+									{
+										health -= 0.01;
+									}
 								}
 							}
 						}
