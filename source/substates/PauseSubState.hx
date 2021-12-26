@@ -20,6 +20,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import lime.utils.Assets;
 import flixel.util.FlxColor;
 import utilities.CoolUtil;
 import states.MainMenuState;
@@ -27,7 +28,7 @@ import states.MainMenuState;
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
-
+	var funFacts:Array<String> = [];
 	var curSelected:Int = 0;
 
 	var menus:Map<String, Array<String>> = [
@@ -41,7 +42,20 @@ class PauseSubState extends MusicBeatSubstate
 
 	var scoreWarning:FlxText;
 	var warningAmountLols:Int = 0;
-
+	function getFunFactShit():Array<Array<String>> // stolen from titlestate :troll:
+		{
+			var fullText:String = Assets.getText(Paths.txt('funFacts'));
+	
+			var firstArray:Array<String> = fullText.split('\n');
+			var swagGoodArray:Array<Array<String>> = [];
+	
+			for (i in firstArray)
+			{
+				swagGoodArray.push(i.split('\n'));
+			}
+	
+			return swagGoodArray;
+		}
 	public function new(x:Float, y:Float)
 	{
 		var optionsArray = menus.get("options");
@@ -88,6 +102,15 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, RIGHT);
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
+		funFacts = FlxG.random.getObject(getFunFactShit());
+		var funFact:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
+		funFact.text = "Fun Fact: "+funFacts[0];
+		levelDifficulty.scrollFactor.set();
+		funFact.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, CENTER);
+		funFact.screenCenter(X);
+		funFact.y=10;
+		levelDifficulty.updateHitbox();
+		add(funFact);
 
 		scoreWarning = new FlxText(20, 15 + 64, 0, "Remember, changing options invalidates your score!", 32);
 		scoreWarning.scrollFactor.set();
