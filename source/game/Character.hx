@@ -559,7 +559,7 @@ class Character extends FlxSprite
 		
 		if(Assets.exists(Paths.txt("character data/" + characterName + "/" + "offsets")))
 		{
-			var offsets:Array<String> = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));;
+			var offsets:Array<String> = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
 
 			for(x in 0...offsets.length)
 			{
