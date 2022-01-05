@@ -1677,15 +1677,6 @@ class PlayState extends MusicBeatState
 			accuracy = Math.round(accuracy) / Math.pow(10, 2);
 		}
 
-		if (characterPlayingAs == 1)
-		{
-			healthShown = maxHealth - health;
-		}
-		else
-		{
-			healthShown = health;
-		}
-
 		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
 
 		scoreTxt.text = (
@@ -1789,6 +1780,15 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
+
+		if (characterPlayingAs == 1)
+		{
+			healthShown = maxHealth - health;
+		}
+		else
+		{
+			healthShown = health;
+		}
 
 		if (healthBar.percent < 20)
 		{
