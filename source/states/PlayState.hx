@@ -1778,8 +1778,8 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		if (health > 2)
-			health = 2;
+		if (health > maxHealth)
+			health = maxHealth;
 
 		if (characterPlayingAs == 1)
 		{
