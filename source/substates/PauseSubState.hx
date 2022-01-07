@@ -149,6 +149,7 @@ class PauseSubState extends MusicBeatSubstate
 			default:
 				scoreWarning.text = "Remember, changing options invalidates your score!";
 		}
+
 		if (-1 * Math.floor(FlxG.mouse.wheel) != 0)
 			changeSleection(-1 * Math.floor(FlxG.mouse.wheel));
 		if (upP)
