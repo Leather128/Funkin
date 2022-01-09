@@ -91,6 +91,6 @@ class SimpleInfoDisplay extends TextField
 
     function version_Function()
     {
-        text += "Version: " + Application.current.meta.get('version');
+        text += "" + Application.current.meta.get('version');
     }
 }

@@ -41,7 +41,8 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Gameplay", 0, "Gameplay"),
 			new PageOption("Graphics", 1, "Graphics"),
 			new PageOption("Tools", 2, "Tools"),
-			new PageOption("Misc", 3, "Misc")
+			new PageOption("Misc", 3, "Misc"),
+			new PageOption("About", 4, "About")
 		],
 		[
 			"Gameplay",
@@ -92,6 +93,13 @@ class OptionsMenu extends MusicBeatState
 			new StringSaveOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7, "playAs"),
 			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", FlxG.save.data.cameraTracksDirections, 8),
 			new BoolOption("Camera Bounce", "cameraZooms", FlxG.save.data.cameraZooms, 9),
+		],
+		[
+			"About",
+			new PageOption("Back", 0, "Graphics"),
+			new BoolOption("Leather engine", "Leather engine", FlxG.save.data.antialiasing, 1),
+			new BoolOption("By Leather128", "By Leather128", FlxG.save.data.healthIcons, 2),
+			new BoolOption("Build Version 0.5.1.1", "Build Version 0.5.1.1", FlxG.save.data.chrsAndBGs, 3),
 		],
 		[
 			"Optimizations",
