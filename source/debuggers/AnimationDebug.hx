@@ -304,11 +304,11 @@ class AnimationDebug extends MusicBeatState
 			offsetsText += anim + " " + offsets[0] + " " + offsets[1] + "\n";
 		}
 
-		if (offsetsText.endsWith("\n"))
-			offsetsText = offsetsText.substr(0, offsetsText.length - 2);
-
-		if ((offsetsText != null) && (offsetsText.length > 0))
+		if ((offsetsText != "") && (offsetsText.length > 0))
 		{
+			if (offsetsText.endsWith("\n"))
+				offsetsText = offsetsText.substr(0, offsetsText.length - 1);
+
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
