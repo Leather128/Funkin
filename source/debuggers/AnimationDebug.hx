@@ -100,6 +100,7 @@ class AnimationDebug extends MusicBeatState
 		moveText.x = FlxG.width - moveText.width;
 		moveText.scrollFactor.set();
 		moveText.color = FlxColor.BLUE;
+		moveText.alignment = RIGHT;
 		moveText.cameras = [camHUD];
 		add(moveText);
 
@@ -186,7 +187,7 @@ class AnimationDebug extends MusicBeatState
 		modDropDown.cameras = [camHUD];
 		add(modDropDown);
 
-		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - 40, "Save Offsets", function() {
+		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - 30, "Save Offsets", function() {
 			saveOffsets();
 		});
 		offset_Button.scrollFactor.set();
