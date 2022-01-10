@@ -203,10 +203,10 @@ class AnimationDebug extends MusicBeatState
 
 		for (anim => offsets in char.animOffsets)
 		{
-			animText.text += anim + (anim == animList[curAnim] ? " (current) " : "") + ": " + offsets + "\n";
-
 			if (pushList)
 				animList.push(anim);
+
+			animText.text += anim + (anim == animList[curAnim] ? " (current) " : "") + ": " + offsets + "\n";
 		}
 	}
 
