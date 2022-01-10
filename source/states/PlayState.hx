@@ -271,6 +271,15 @@ class PlayState extends MusicBeatState
 					characterPlayingAs = 0;
 			}
 
+			if(characterPlayingAs == 1)
+			{
+				var oldRegKeyCount = SONG.keyCount;
+				var oldPlrKeyCount = SONG.playerKeyCount;
+
+				SONG.keyCount = oldPlrKeyCount;
+				SONG.playerKeyCount = oldRegKeyCount;
+			}
+
 			instance = this;
 
 			if(FlxG.save.data.bot)
@@ -307,7 +316,7 @@ class PlayState extends MusicBeatState
 				missSounds.push(sound);
 			}
 
-			binds = NoteHandler.getBinds(SONG.keyCount);
+			binds = NoteHandler.getBinds(SONG.playerKeyCount);
 
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
@@ -407,8 +416,6 @@ class PlayState extends MusicBeatState
 
 		arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
 		type_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("arrow types/default")));
-
-		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
 
 		arrow_Type_Sprites.set("default", Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
 
@@ -1216,7 +1223,9 @@ class PlayState extends MusicBeatState
 		Conductor.recalculateStuff(songMultiplier);
 
 		// Updating Discord Rich Presence (with Time Left)
+		#if discord_rpc
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength / songMultiplier);
+		#end
 		#end
 
 		resyncVocals();
@@ -1265,18 +1274,19 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0] + Conductor.offset + SONG.chartOffset;
-				var daNoteData:Int = Std.int(songNotes[1] % SONG.keyCount);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if(characterPlayingAs == -1)
-					gottaHitNote = true;
-
-				if(songNotes[1] >= SONG.keyCount)
+				if(songNotes[1] >= (!gottaHitNote ? SONG.keyCount : SONG.playerKeyCount))
 					gottaHitNote = !section.mustHitSection;
 
 				if(characterPlayingAs == 1)
 					gottaHitNote = !gottaHitNote;
+
+				if(characterPlayingAs == -1)
+					gottaHitNote = true;
+
+				var daNoteData:Int = Std.int(songNotes[1] % (!gottaHitNote ? SONG.keyCount : SONG.playerKeyCount));
 
 				var oldNote:Note;
 
@@ -1315,7 +1325,7 @@ class PlayState extends MusicBeatState
 					char = chars[0];
 				}
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, char, songNotes[4], null, chars);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, char, songNotes[4], null, chars, gottaHitNote);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1330,7 +1340,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, char, songNotes[4], null, chars);
+					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, char, songNotes[4], null, chars, gottaHitNote);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1368,7 +1378,12 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Float, ?isPlayer:Bool = false):Void
 	{
-		for (i in 0...SONG.keyCount)
+		var usedKeyCount = SONG.keyCount;
+
+		if(isPlayer)
+			usedKeyCount = SONG.playerKeyCount;
+
+		for (i in 0...usedKeyCount)
 		{
 			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i);
 
@@ -1376,20 +1391,20 @@ class PlayState extends MusicBeatState
 
 			babyArrow.antialiasing = ui_Settings[3] == "true";
 
-			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[SONG.keyCount-1])))));
+			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[usedKeyCount-1])))));
 			babyArrow.updateHitbox();
 			
-			var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].toLowerCase();
+			var animation_Base_Name = NoteVariables.Note_Count_Directions[usedKeyCount - 1][Std.int(Math.abs(i))].toLowerCase();
 
 			babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
-			babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);
-			babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
+			babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[usedKeyCount - 1][i] + ' press', 24, false);
+			babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[usedKeyCount - 1][i] + ' confirm', 24, false);
 
 			babyArrow.scrollFactor.set();
 			
 			babyArrow.playAnim('static');
 
-			babyArrow.x += (babyArrow.width + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]))) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount - 1]);
+			babyArrow.x += (babyArrow.width + (2 + Std.parseFloat(mania_gap[usedKeyCount - 1]))) * Math.abs(i) + Std.parseFloat(mania_offset[usedKeyCount - 1]);
 			babyArrow.y = strumLine.y - (babyArrow.height / 2);
 
 			if (isStoryMode)
@@ -1406,12 +1421,12 @@ class PlayState extends MusicBeatState
 			else
 				enemyStrums.add(babyArrow);
 
-			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16) + (SONG.keyCount >= 10 ? 30 : 0);
+			babyArrow.x += 100 - ((usedKeyCount - 4) * 16) + (usedKeyCount >= 10 ? 30 : 0);
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
 
-			if(SONG.keyCount != 4 && isPlayer && FlxG.save.data.extraKeyReminders)
+			if(usedKeyCount != 4 && isPlayer && FlxG.save.data.extraKeyReminders)
 			{
 				//var coolWidth = Std.int(40 - ((key_Count - 5) * 2) + (key_Count == 10 ? 30 : 0));
 										// funny 4 key math i guess, full num is 2.836842105263158 (width / previous key width thingy which was 38)
@@ -1457,7 +1472,7 @@ class PlayState extends MusicBeatState
 
 			for(note in playerStrums)
 			{
-				bruhVal += note.swagWidth + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]));
+				bruhVal += note.swagWidth + (2 + Std.parseFloat(mania_gap[SONG.playerKeyCount - 1]));
 			}
 	
 			noteBG.setGraphicSize(Std.int(bruhVal), FlxG.height * 2);
@@ -1503,7 +1518,7 @@ class PlayState extends MusicBeatState
 
 			paused = false;
 
-			#if desktop
+			#if discord_rpc
 			if (startTimer.finished)
 			{
 				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, ((songLength - Conductor.songPosition) / songMultiplier >= 1 ? (songLength - Conductor.songPosition) / songMultiplier : 1));
@@ -1520,7 +1535,7 @@ class PlayState extends MusicBeatState
 
 	override public function onFocus():Void
 	{
-		#if desktop
+		#if discord_rpc
 		if (health > 0 && !paused)
 		{
 			if (Conductor.songPosition > 0.0)
@@ -1539,7 +1554,7 @@ class PlayState extends MusicBeatState
 	
 	override public function onFocusLost():Void
 	{
-		#if desktop
+		#if discord_rpc
 		if (health > 0 && !paused)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1736,10 +1751,13 @@ class PlayState extends MusicBeatState
 			var p1 = luaModchart.getVar("strumLine1Visible", 'bool');
 			var p2 = luaModchart.getVar("strumLine2Visible", 'bool');
 
-			for (i in 0...SONG.keyCount)
+			for(i in 0...SONG.keyCount)
 			{
 				strumLineNotes.members[i].visible = p1;
+			}
 
+			for(i in 0...SONG.playerKeyCount)
+			{
 				if (i <= playerStrums.length)
 					playerStrums.members[i].visible = p2;
 			}
@@ -2119,7 +2137,7 @@ class PlayState extends MusicBeatState
 
 								if(!daNote.isSustainNote && FlxG.save.data.opponentNoteSplashes)
 								{
-									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID, spr);
+									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID, spr, false);
 									splash.cameras = [camHUD];
 									add(splash);
 								}
@@ -2290,7 +2308,7 @@ class PlayState extends MusicBeatState
 
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
-			#if desktop
+			#if discord_rpc
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 		}
@@ -2310,7 +2328,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.switchState(new ChartingState());
 
-			#if desktop
+			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
@@ -2593,7 +2611,7 @@ class PlayState extends MusicBeatState
 			playerStrums.forEachAlive(function(spr:FlxSprite) {
 				if(spr.ID == Math.abs(noteData))
 				{
-					var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), noteData, spr);
+					var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), noteData, spr, true);
 					splash.cameras = [camHUD];
 					add(splash);
 				}
@@ -2805,7 +2823,7 @@ class PlayState extends MusicBeatState
 						justReleasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_RELEASED);
 						heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
 		
-						if(releasedArray[i] == true && SONG.keyCount == 4)
+						if(releasedArray[i] == true && SONG.playerKeyCount == 4)
 						{
 							justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.JUST_PRESSED);
 							releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.RELEASED);
@@ -2963,7 +2981,7 @@ class PlayState extends MusicBeatState
 					var rythmArray:Array<Bool> = [];
 					var noteDataTimes:Array<Float> = [];
 	
-					for(i in 0...SONG.keyCount)
+					for(i in 0...SONG.playerKeyCount)
 					{
 						noteDataPossibles.push(false);
 						noteDataTimes.push(-1);
@@ -3046,7 +3064,7 @@ class PlayState extends MusicBeatState
 				{
 					var thingsHit:Array<Bool> = [];
 	
-					for(i in 0...SONG.keyCount)
+					for(i in 0...SONG.playerKeyCount)
 					{
 						thingsHit.push(false);
 					}
@@ -3323,32 +3341,32 @@ class PlayState extends MusicBeatState
 					if(boyfriend.otherCharacters != null)
 					{
 						if(note.characters.length <= 1)
-							boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+							boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 						else
 						{
 							for(character in note.characters)
 							{
-								boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+								boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 							}
 						}
 					}
 					else
-						boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+						boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 				}
 				else
 				{
 					if(dad.otherCharacters != null)
 						if(note.characters.length <= 1)
-							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 						else
 						{
 							for(character in note.characters)
 							{
-								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 							}
 						}
 					else
-						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 				}
 			}
 
@@ -3367,7 +3385,7 @@ class PlayState extends MusicBeatState
 		{
 			if(note.shouldHit && !note.isSustainNote)
 			{
-				popUpScore(note.strumTime, note.noteData % SONG.keyCount, setNoteDiff);
+				popUpScore(note.strumTime, note.noteData % SONG.playerKeyCount, setNoteDiff);
 				combo += 1;
 
 				if(hitSoundString != "none")
@@ -3380,7 +3398,7 @@ class PlayState extends MusicBeatState
 				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
 
 				if(!playingReplay)
-					replay.recordKeyHit(note.noteData % SONG.keyCount, note.strumTime, (setNoteDiff != null ? setNoteDiff : note.strumTime - Conductor.songPosition));
+					replay.recordKeyHit(note.noteData % SONG.playerKeyCount, note.strumTime, (setNoteDiff != null ? setNoteDiff : note.strumTime - Conductor.songPosition));
 
 				updateRatingText();
 			}
@@ -3395,31 +3413,31 @@ class PlayState extends MusicBeatState
 			{
 				if(boyfriend.otherCharacters != null)
 					if(note.characters.length <= 1)
-						boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+						boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 					else
 					{
 						for(character in note.characters)
 						{
-							boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+							boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 						}
 					}
 				else
-					boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 			}
 			else
 			{
 				if(dad.otherCharacters != null)
 					if(note.characters.length <= 1)
-						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 					else
 					{
 						for(character in note.characters)
 						{
-							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 						}
 					}
 				else
-					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 			}
 
 			#if linc_luajit

@@ -33,13 +33,14 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
-	var gf:String;
+	var gf:Null<String>;
 	var stage:String;
 	var validScore:Bool;
 
 	var modchartPath:String;
 
-	var keyCount:Int;
+	var keyCount:Null<Int>;
+	var playerKeyCount:Null<Int>;
 
 	var timescale:Array<Int>;
 
@@ -48,7 +49,7 @@ typedef SwagSong =
 	// shaggy pog
 	var mania:Null<Int>;
 
-	var ui_Skin:String;
+	var ui_Skin:Null<String>;
 
 	var cutscene:String;
 	var endCutscene:String;
@@ -66,11 +67,12 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
-	public var gf:String = 'gf';
+	public var gf:Null<String> = 'gf';
 	
-	public var stage:String = 'chromatic-stage';
+	public var stage:Null<String> = 'chromatic-stage';
 
-	public var keyCount:Int = 4;
+	public var keyCount:Null<Int> = 4;
+	public var playerKeyCount:Null<Int> = 4;
 
 	public function new(song, notes, bpm)
 	{
@@ -120,6 +122,9 @@ class Song
 
 		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
+
+		if(Std.string(swagShit.playerKeyCount) == "null")
+			swagShit.playerKeyCount = swagShit.keyCount;
 		
 		if(Std.string(swagShit.mania) != "null")
 		{
