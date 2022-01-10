@@ -111,7 +111,7 @@ class AnimationDebug extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.music('breakfast'));
 		
-		FlxG.camera.follow(camFollow);
+		charCam.follow(camFollow);
 
 		var characterData:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
@@ -186,7 +186,7 @@ class AnimationDebug extends MusicBeatState
 		modDropDown.cameras = [camHUD];
 		add(modDropDown);
 
-		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - charDropDown.height - 4, "Save Offsets", function() {
+		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - 40, "Save Offsets", function() {
 			saveOffsets();
 		});
 		offset_Button.scrollFactor.set();
@@ -212,9 +212,9 @@ class AnimationDebug extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.E)
-			FlxG.camera.zoom += 0.25;
+			charCam.zoom += 0.25;
 		if (FlxG.keys.justPressed.Q)
-			FlxG.camera.zoom -= 0.25;
+			charCam.zoom -= 0.25;
 
 		var shiftThing:Int = FlxG.keys.pressed.SHIFT ? 5 : 1;
 
@@ -304,7 +304,7 @@ class AnimationDebug extends MusicBeatState
 		}
 
 		if (offsetsText.endsWith("\n"))
-			offsetsText = offsetsText.substr(0, offsetsText.length - 3);
+			offsetsText = offsetsText.substr(0, offsetsText.length - 2);
 
 		if ((offsetsText != null) && (offsetsText.length > 0))
 		{
