@@ -179,6 +179,8 @@ class ModchartUtilities
         setVar("playerKeyCount", PlayState.SONG.playerKeyCount);
         setVar("scrollspeed", PlayState.SONG.speed);
         setVar("fpsCap", FlxG.save.data.fpsCap);
+        setVar("bot", FlxG.save.data.bot);
+        setVar("noDeath", FlxG.save.data.noDeath);
         setVar("downscroll", FlxG.save.data.downscroll);
         setVar("flashing", FlxG.save.data.flashing);
         setVar("distractions", FlxG.save.data.distractions);
@@ -214,6 +216,7 @@ class ModchartUtilities
         setVar("mustHit", false);
         setVar("strumLineY", PlayState.instance.strumLine.y);
 
+        setVar("characterPlayingAs", PlayState.characterPlayingAs);
         setVar("inReplay", PlayState.playingReplay);
         
         // callbacks
