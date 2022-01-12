@@ -247,7 +247,7 @@ class PlayState extends MusicBeatState
 			replay = new Replay();
 	}
 
-	public var characterPlayingAs:Int = 0;
+	public static var characterPlayingAs:Int = 0;
 
 	var hitSoundString:String = FlxG.save.data.hitsound;
 
