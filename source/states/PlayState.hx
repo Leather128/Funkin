@@ -690,7 +690,10 @@ class PlayState extends MusicBeatState
 			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, (characterPlayingAs == 1 ? LEFT_TO_RIGHT : RIGHT_TO_LEFT), Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 				'health', minHealth, maxHealth);
 			healthBar.scrollFactor.set();
-			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
+			if (characterPlayingAs == 1)
+				healthBar.createFilledBar(boyfriend.barColor, dad.barColor);
+			else
+				healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
 			healthBar.pixelPerfectPosition = true;
 			add(healthBar);
 
@@ -1739,8 +1742,16 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		if (characterPlayingAs == 1)
+		{
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) * 0.01) - iconOffset);
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		}
+		else
+		{
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
+			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		}
 
 		#if linc_luajit
 		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates && startedCountdown)
@@ -1833,7 +1844,11 @@ class PlayState extends MusicBeatState
 		if (health > maxHealth)
 			health = maxHealth;
 
+<<<<<<< Updated upstream
 		if (healthBar.percent < 20)
+=======
+		if (characterPlayingAs == 1 ? healthBar.percent > 80 : healthBar.percent < 20)
+>>>>>>> Stashed changes
 		{
 			iconP1.animation.curAnim.curFrame = 1;
 			iconP2.animation.curAnim.curFrame = 2;
@@ -1847,7 +1862,7 @@ class PlayState extends MusicBeatState
 			iconP2.animation.curAnim.curFrame = 0;
 		}
 
-		if (healthBar.percent > 80)
+		if (characterPlayingAs == 1 ? healthBar.percent < 20 : healthBar.percent > 80)
 		{
 			iconP2.animation.curAnim.curFrame = 1;
 			iconP1.animation.curAnim.curFrame = 2;
@@ -2478,7 +2493,10 @@ class PlayState extends MusicBeatState
 										PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
 										PlayState.instance.add(PlayState.instance.iconP2);
 						
-										bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+										if (characterPlayingAs == 1)
+											bar.createFilledBar(PlayState.boyfriend.barColor, dad.barColor);
+										else
+											bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
 										bar.updateFilledBar();
 									}
 								case "bf" | "boyfriend" | "player":
@@ -2534,7 +2552,10 @@ class PlayState extends MusicBeatState
 										PlayState.instance.iconP1.flipX = true;
 										PlayState.instance.add(PlayState.instance.iconP1);
 						
-										bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
+										if (characterPlayingAs == 1)
+											bar.createFilledBar(boyfriend.barColor, PlayState.dad.barColor);
+										else
+											bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
 										bar.updateFilledBar();
 									}
 							}
