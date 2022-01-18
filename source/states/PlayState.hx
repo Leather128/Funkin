@@ -687,7 +687,7 @@ class PlayState extends MusicBeatState
 			healthBarBG.pixelPerfectPosition = true;
 			add(healthBarBG);
 			
-			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, (characterPlayAs == 1 ? LEFT_TO_RIGHT : RIGHT_TO_LEFT), Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, (characterPlayingAs == 1 ? LEFT_TO_RIGHT : RIGHT_TO_LEFT), Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 				'health', minHealth, maxHealth);
 			healthBar.scrollFactor.set();
 			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
