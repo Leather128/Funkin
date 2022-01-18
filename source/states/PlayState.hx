@@ -1844,11 +1844,7 @@ class PlayState extends MusicBeatState
 		if (health > maxHealth)
 			health = maxHealth;
 
-<<<<<<< Updated upstream
-		if (healthBar.percent < 20)
-=======
 		if (characterPlayingAs == 1 ? healthBar.percent > 80 : healthBar.percent < 20)
->>>>>>> Stashed changes
 		{
 			iconP1.animation.curAnim.curFrame = 1;
 			iconP2.animation.curAnim.curFrame = 2;
