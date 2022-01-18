@@ -115,7 +115,6 @@ class PlayState extends MusicBeatState
 
 	private var gfSpeed:Int = 1;
 	public var health:Float = 1;
-	public var healthShown:Float = 1;
 	public var minHealth:Float = 0;
 	public var maxHealth:Float = 2;
 	private var combo:Int = 0;
@@ -688,8 +687,8 @@ class PlayState extends MusicBeatState
 			healthBarBG.pixelPerfectPosition = true;
 			add(healthBarBG);
 			
-			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-				'healthShown', minHealth, maxHealth);
+			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, (characterPlayAs == 1 ? LEFT_TO_RIGHT : RIGHT_TO_LEFT), Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+				'health', minHealth, maxHealth);
 			healthBar.scrollFactor.set();
 			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
 			healthBar.pixelPerfectPosition = true;
@@ -1833,15 +1832,6 @@ class PlayState extends MusicBeatState
 
 		if (health > maxHealth)
 			health = maxHealth;
-
-		if (characterPlayingAs == 1)
-		{
-			healthShown = maxHealth - health;
-		}
-		else
-		{
-			healthShown = health;
-		}
 
 		if (healthBar.percent < 20)
 		{
