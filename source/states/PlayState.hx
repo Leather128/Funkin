@@ -1810,16 +1810,8 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		if (characterPlayingAs == 1)
-		{
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) * 0.01) - iconOffset);
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-		}
-		else
-		{
-			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-			iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-		}
+		iconP1.x = healthBar.x + (healthBar.width * ((characterPlayingAs == 1 ? FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) : FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0)) * 0.01) - iconOffset);
+		iconP2.x = healthBar.x + (healthBar.width * ((characterPlayingAs == 1 ? FlxMath.remapToRange(healthBar.percent, 100, 0, 100, 0) : FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0)) * 0.01)) - (iconP2.width - iconOffset);
 
 		#if linc_luajit
 		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates && startedCountdown)
