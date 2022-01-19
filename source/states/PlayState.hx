@@ -4000,10 +4000,10 @@ class PlayState extends MusicBeatState
 					PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
 					PlayState.instance.add(PlayState.instance.iconP2);
 	
-          if (characterPlayingAs == 1)
-              bar.createFilledBar(PlayState.boyfriend.barColor, dad.barColor);
-          else
-              bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+					if (characterPlayingAs == 1)
+						bar.createFilledBar(PlayState.boyfriend.barColor, dad.barColor);
+					else
+						bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
 					bar.updateFilledBar();
 				}
 
@@ -4080,10 +4080,10 @@ class PlayState extends MusicBeatState
 					PlayState.instance.iconP1.flipX = true;
 					PlayState.instance.add(PlayState.instance.iconP1);
 	  
-          if (characterPlayingAs == 1)
-              bar.createFilledBar(boyfriend.barColor, PlayState.dad.barColor);
-          else
-              bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
+					if (characterPlayingAs == 1)
+						bar.createFilledBar(boyfriend.barColor, PlayState.dad.barColor);
+					else
+						bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
 					bar.updateFilledBar();
 				}
 		}
