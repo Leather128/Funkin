@@ -138,6 +138,7 @@ class PlayState extends MusicBeatState
 
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
+	public var camOther:FlxCamera;
 	public var camHUD:FlxCamera;
 	public var camGame:FlxCamera;
 
@@ -357,13 +358,16 @@ class PlayState extends MusicBeatState
 
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
+		camOther = new FlxCamera();
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camOther, false);
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		camHUD.bgColor.alpha = 0;
+		camOther.bgColor.alpha = 0;
 		
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -840,14 +844,14 @@ class PlayState extends MusicBeatState
 
 			if(utilities.Options.getData("sideRatings"))
 			{
-				ratingText = new FlxText(0,0,0,"bruh");
+				ratingText = new FlxText(10,0,0,"bruh");
 				ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				ratingText.screenCenter(Y);
 		
 				ratingText.scrollFactor.set();
 				add(ratingText);
 
-				ratingText.cameras = [camHUD];
+				ratingText.cameras = [camOther];
 
 				updateRatingText();
 			}
@@ -1869,16 +1873,13 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		iconP1.scale.set(CoolUtil.boundTo(iconP1.scale.x, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2), CoolUtil.boundTo(iconP1.scale.y, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2));
-		iconP2.scale.set(CoolUtil.boundTo(iconP2.scale.x, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2), CoolUtil.boundTo(iconP2.scale.y, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
-
 		var iconOffset:Int = 26;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
+
+		iconP1.y = healthBar.y - (iconP1.height / 2) - iconP1.offsetY;
+		iconP2.y = healthBar.y - (iconP2.height / 2) - iconP2.offsetY;
 
 		if(utilities.Options.getData("cameraZooms") && camZooming && !switchedStates)
 		{
