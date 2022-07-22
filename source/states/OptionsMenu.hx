@@ -165,6 +165,11 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
+                #if not web
+                Paths.clearUnusedMemory();
+                Paths.clearStoredMemory();
+                #end
+
 		if(PlayState.instance == null)
 			pages[3][2] = null;
 
