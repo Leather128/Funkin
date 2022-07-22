@@ -112,6 +112,11 @@ class StageMakingState extends MusicBeatState
 
     override public function create()
     {
+        #if not web
+        Paths.clearUnusedMemory();
+        Paths.clearStoredMemory();
+        #end
+
         FlxG.mouse.visible = true;
 
         stageCam = new FlxCamera();
