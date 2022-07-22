@@ -61,6 +61,11 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+                #if not web
+                Paths.clearUnusedMemory();
+                Paths.clearStoredMemory();
+                #end
+
 		// UPDATE TITLE WINDOW JUST IN CASE LOL //
 		MusicBeatState.windowNameSuffix = " Story Menu";
 
