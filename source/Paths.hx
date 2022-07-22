@@ -10,8 +10,10 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+#if not web
 import sys.FileSystem;
 import sys.io.File;
+#end
 
 class Paths
 {
@@ -24,6 +26,7 @@ class Paths
 		currentLevel = name.toLowerCase();
 
         // stolen from forever lmao -mcagabe19
+        #if not web
 	public static var currentTrackedAssets:Map<String, FlxGraphic> = [];
 	public static var currentTrackedTextures:Map<String, Texture> = [];
 	public static var currentTrackedSounds:Map<String, Sound> = [];
@@ -105,8 +108,8 @@ class Paths
 
 	public static function returnGraphic(key:String, ?library:String, ?textureCompression:Bool = false)
 	{
-		var path = getPath('images/$key.png', IMAGE, library);
-		if (FileSystem.exists(path))
+		var path = getPath('images/$key.png', IMAGE, library); 
+                if (FileSystem.exists(path))
 		{
 			if (!currentTrackedAssets.exists(key))
 			{
@@ -136,6 +139,7 @@ class Paths
 		trace('oh no ' + key + ' is returning null NOOOO');
 		return null;
 	}
+        #end
         // end stole code
 
 	static function getPath(file:String, type:AssetType, library:Null<String>)
