@@ -1,0 +1,28 @@
+{
+    "defaultFlipX": true,
+    "dancesLeftAndRight": false,
+    "imagePath": "bfPixelsDEAD",
+    "antialiased": false,
+    "graphicSize": 6,
+    "spritesheetType": "SPARROW",
+    "animations": [
+        {
+            "name": "firstDeath",
+            "animation_name": "BF Dies pixel",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "deathLoop",
+            "animation_name": "Retry Loop",
+            "fps": 24,
+            "looped": true
+        },
+        {
+            "name": "deathConfirm",
+            "animation_name": "RETRY CONFIRM",
+            "fps": 24,
+            "looped": false
+        }
+    ]
+}

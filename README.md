@@ -8,11 +8,9 @@ This is the repository for Leather Engine, an engine created for making and play
 
 - [Some Mod Ports](https://github.com/Leather128/LeathersFNFModPorts)
 
-## Build Instructions 
+## Build Instructions
 
-### IMPORTANT:
-
-Use Polymod 1.5.2 as it's the version that the engine is currently designed for.
+### IMPORTANT
 
 For build instructions go to [Build.md](https://github.com/Leather128/LeatherEngine/blob/main/Build.md)
 
@@ -42,20 +40,20 @@ You can load, share, and play replays of songs you've played! They can even be i
 
 ## Credits
 
-* KadeDev - Code for downscroll & Modcharts
+- KadeDev - Code for downscroll & Modcharts
 
-* SrPerez - Original 9 Key and 6 Key Designs
+- SrPerez - Original 9 Key and 6 Key Designs
 
-* larsiusprime - Scrollable Drop Down Menu
+- larsiusprime - Scrollable Drop Down Menu
 
-* PolybiusProxy - .mp4 Video Loader Extension
+- PolybiusProxy - .mp4 Video Loader Extension
 
-* datee - Developing HaxeVLC (all the contents in the 'vlc' folder belongs to datee).
+- datee - Developing HaxeVLC (all the contents in the 'vlc' folder belongs to datee).
 
-* Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
+- Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
 
-* Ronezkj15 - Some Ideas + New Leather Engine Logo
+- Ronezkj15 - Some Ideas + New Leather Engine Logo
 
-* ShadowMario - Color Swap Shader (for notes and stuffs) + some really weird modchart stuff that im too stupid to know lol
+- ShadowMario - Color Swap Shader (for notes and stuffs) + some really weird modchart stuff that im too stupid to know lol
 
-* Smokey555 - Adobe Animate Spritemap -> FlxFramesCollection Support
+- Smokey555 - Adobe Animate Spritemap -> FlxFramesCollection Support

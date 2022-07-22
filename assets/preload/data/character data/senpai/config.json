@@ -1,0 +1,43 @@
+{
+    "defaultFlipX": false,
+    "dancesLeftAndRight": false,
+    "imagePath": "senpai",
+    "antialiased": false,
+    "graphicSize": 6,
+    "spritesheetType": "SPARROW",
+    "barColor":  [255, 170, 111],
+    "cameraOffset":  [15, 0],
+    "positionOffset": [317, 522],
+    "animations": [
+        {
+            "name": "idle",
+            "animation_name": "Senpai Idle",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singLEFT",
+            "animation_name": "SENPAI LEFT NOTE",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singDOWN",
+            "animation_name": "SENPAI DOWN NOTE",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singUP",
+            "animation_name": "SENPAI UP NOTE",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singRIGHT",
+            "animation_name": "SENPAI RIGHT NOTE",
+            "fps": 24,
+            "looped": false
+        }
+    ]
+}
