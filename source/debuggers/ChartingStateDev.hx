@@ -87,6 +87,11 @@ class ChartingStateDev extends MusicBeatState
 
     override function create()
     {
+        #if not web
+        Paths.clearUnusedMemory();
+        Paths.clearStoredMemory();
+        #end
+
         #if discord_rpc
         DiscordClient.changePresence("Charting a song", null, null);
         #end
