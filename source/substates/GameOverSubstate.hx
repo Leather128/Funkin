@@ -71,6 +71,11 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+                #if not web
+                Paths.clearUnusedMemory();
+                Paths.clearStoredMemory();
+                #end
+
 		super.update(elapsed);
 
 		FlxG.camera.followLerp = 0.01 * (60 / Main.display.currentFPS);
