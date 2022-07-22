@@ -1,5 +1,9 @@
 package;
 
+import flixel.graphics.FlxGraphic;
+import openfl.system.System;
+import openfl.display.BitmapData;
+import openfl.display3D.textures.Texture;
 import lime.utils.Assets;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
