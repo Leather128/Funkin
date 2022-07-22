@@ -127,8 +127,10 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+                #if not web
                 Paths.clearUnusedMemory();
                 Paths.clearStoredMemory();
+                #end
 
 		#if NO_PRELOAD_ALL
 		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
