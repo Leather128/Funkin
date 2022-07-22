@@ -272,6 +272,11 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+               #if not web
+               Paths.clearUnusedMemory();
+               Paths.clearStoredMemory();
+               #end
+
 		#if linc_luajit
 		ModchartUtilities.lua_Characters.clear();
 		ModchartUtilities.lua_Sounds.clear();
