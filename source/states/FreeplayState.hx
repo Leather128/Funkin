@@ -66,6 +66,11 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+                #if not web
+                Paths.clearUnusedMemory();
+                Paths.clearStoredMemory();
+                #end
+
 		MusicBeatState.windowNameSuffix = " Freeplay";
 		
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
