@@ -36,6 +36,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+                #if not web
+                Paths.clearUnusedMemory();
+                Paths.clearStoredMemory();
+                #end
+
 		if(PolymodHandler.metadataArrays.length > 0)
 			optionShit.push('mods');
 
