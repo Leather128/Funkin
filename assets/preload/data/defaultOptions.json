@@ -29,6 +29,10 @@
             "value": false
         },
         {
+            "option": "barColors",
+            "value": false
+        },
+        {
             "option": "middlescroll",
             "value": false
         },

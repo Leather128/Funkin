@@ -773,7 +773,10 @@ class PlayState extends MusicBeatState
 					timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
 						'time', 0, FlxG.sound.music.length);
 					timeBar.scrollFactor.set();
-					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
+					if (utilities.Options.getData("barColors"))
+						timeBar.createFilledBar(dad.barColor, boyfriend.barColor);
+					else
+						timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
 					timeBar.pixelPerfectPosition = true;
 					timeBar.numDivisions = 400;
 					add(timeBar);
@@ -798,7 +801,10 @@ class PlayState extends MusicBeatState
 					timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
 						'time', 0, FlxG.sound.music.length);
 					timeBar.scrollFactor.set();
-					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
+					if (utilities.Options.getData("barColors"))
+						timeBar.createFilledBar(dad.barColor, boyfriend.barColor);
+					else
+						timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
 					timeBar.pixelPerfectPosition = true;
 					timeBar.numDivisions = 800;
 					add(timeBar);

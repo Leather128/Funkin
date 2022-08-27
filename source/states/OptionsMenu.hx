@@ -59,7 +59,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("No Death", "noDeath", 10),
 			new BoolOption("Use Custom Scrollspeed", "useCustomScrollSpeed", 11),
 			new GameSubstateOption("Custom Scroll Speed", 12, substates.ScrollSpeedMenu),
-			new StringSaveOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), 13, "hitsound")
+			new StringSaveOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), 13, "hitsound"),
+			new BoolOption("Time Bar Colors", "barColors", 4),
 		],
 		[
 			"Graphics",
