@@ -114,12 +114,6 @@ class ModsMenu extends MusicBeatState
 			page.add(modOption);
 			optionLoopNum++;
 		}
-		
-		descriptionText.text = 
-			ModList.modMetadatas.get(x.Option_Value).description 
-			+ "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value)._author 
-			+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value)._mod_version
-			+ "\n";
 	}
 
 	override function update(elapsed:Float)
@@ -175,8 +169,8 @@ class ModsMenu extends MusicBeatState
 				@:privateAccess
 				descriptionText.text = 
 					ModList.modMetadatas.get(x.Option_Value).description 
-					+ "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value)._author 
-					+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value)._modVersion
+					+ "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value).author 
+					+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value).modVersion
 					+ "\n";
 			}
 
