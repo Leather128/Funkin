@@ -73,7 +73,7 @@ class ModsMenu extends MusicBeatState
 
 		loadMods();
 
-		descBg = new FlxSprite(0, FlxG.height - 90).makeGraphic(FlxG.width, 90, 0xFF000000);
+		descBg = new FlxSprite(0, FlxG.height - 50).makeGraphic(FlxG.width, 300, 0xFF000000);
 		descBg.alpha = 0.6;
 		add(descBg);
 
@@ -126,6 +126,12 @@ class ModsMenu extends MusicBeatState
 			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		}
 
+		if (FlxG.keys.justPressed.R)
+		{
+			trace("Reset Mod Data");
+			PolymodHandler.loadMods();
+		}
+		
 		if (controls.UP_P)
 		{
 			curSelected -= 1;
@@ -161,7 +167,11 @@ class ModsMenu extends MusicBeatState
 				descriptionText.screenCenter(X);
 
 				@:privateAccess
-				descriptionText.text = ModList.modMetadatas.get(x.Option_Value).description + "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value)._author + "\n";
+				descriptionText.text = 
+					ModList.modMetadatas.get(x.Option_Value).description 
+					+ "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value).author 
+					+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value).modVersion
+					+ "\n";
 			}
 
 			bruh++;
