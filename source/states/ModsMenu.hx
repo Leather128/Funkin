@@ -176,7 +176,7 @@ class ModsMenu extends MusicBeatState
 				descriptionText.text = 
 					ModList.modMetadatas.get(x.Option_Value).description 
 					+ "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value)._author 
-					+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value)._mod_version
+					+ "\nMod Version: " + ModList.modMetadatas.get(x.Option_Value)._modVersion
 					+ "\n";
 			}
 
