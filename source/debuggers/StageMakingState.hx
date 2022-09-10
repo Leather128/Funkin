@@ -609,6 +609,7 @@ class StageMakingState extends MusicBeatState
         {
             selectedThing = true;
             selected = bf_Pos;
+            fileInput.text = '';
 
             xStepper.value = selected.x;
             yStepper.value = selected.y;
@@ -621,6 +622,7 @@ class StageMakingState extends MusicBeatState
         {
             selectedThing = true;
             selected = gf_Pos;
+            fileInput.text = '';
 
             xStepper.value = selected.x;
             yStepper.value = selected.y;
@@ -633,6 +635,7 @@ class StageMakingState extends MusicBeatState
         {
             selectedThing = true;
             selected = dad_Pos;
+            fileInput.text = '';
 
             xStepper.value = selected.x;
             yStepper.value = selected.y;
