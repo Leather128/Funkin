@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 #if sys
 import ui.ModIcon;
 import modding.ModList;
@@ -34,6 +35,7 @@ import game.Highscore;
 class ModsMenu extends MusicBeatState
 {
 	var curSelected:Int = 0;
+	var ui_Skin:Null<String>;
 
 	public var page:FlxTypedGroup<ModOption> = new FlxTypedGroup<ModOption>();
 
@@ -44,6 +46,12 @@ class ModsMenu extends MusicBeatState
 
 	override function create()
 	{
+		if (ui_Skin == null)
+			ui_Skin = "default";
+
+		// yo poggars
+		if (ui_Skin == "default")
+			ui_Skin = Options.getData("uiSkin");
 		MusicBeatState.windowNameSuffix = " Mods Menu";
 
 		instance = this;
@@ -51,7 +59,10 @@ class ModsMenu extends MusicBeatState
 		var menuBG:FlxSprite;
 
 		if(utilities.Options.getData("menuBGs"))
-			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuDesat')))
+				menuBG = new FlxSprite().loadGraphic(Paths.image('ui skins/' + "default" + '/menuDesat'));
+			else
+				menuBG = new FlxSprite().loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuDesat'));
 		else
 			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 
