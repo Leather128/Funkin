@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 import flixel.util.FlxTimer;
 import game.Replay;
 import utilities.MusicUtilities;
@@ -20,7 +21,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.app.Application;
 import modding.PolymodHandler;
-
 using StringTools;
 
 class MainMenuState extends MusicBeatState
@@ -64,7 +64,7 @@ class MainMenuState extends MusicBeatState
 		var bg:FlxSprite;
 
 		if(utilities.Options.getData("menuBGs"))
-			bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+			bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + Options.getData("uiSkin") + '/menuBG'));
 		else
 			bg = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#FDE871"), false, "optimizedMenuBG");
 
@@ -80,7 +80,7 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 
 		if(utilities.Options.getData("menuBGs"))
-			magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+			magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + Options.getData("uiSkin") + '/menuDesat'));
 		else
 			magenta = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 
@@ -100,7 +100,7 @@ class MainMenuState extends MusicBeatState
 		for (i in 0...optionShit.length)
 		{
 			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = Paths.getSparrowAtlas('main menu/' + optionShit[i], 'preload');
+			menuItem.frames = Paths.getSparrowAtlas('main menu/' + Options.getData("uiSkin") + '/' + optionShit[i], 'preload');
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 			menuItem.animation.play('idle');

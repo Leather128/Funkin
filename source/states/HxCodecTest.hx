@@ -1,7 +1,9 @@
 package states;
 
 import flixel.FlxState;
-
+#if VIDEOS_ALLOWED
+import hxcodec.VideoHandler;
+#end
 class HxCodecTest extends FlxState
 {
     override public function create()

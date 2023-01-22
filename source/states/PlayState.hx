@@ -67,7 +67,9 @@ import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
 import openfl.utils.Assets as OpenFlAssets;
-
+#if VIDEOS_ALLOWED
+import hxcodec.VideoHandler;
+#end
 using StringTools;
 
 /**
