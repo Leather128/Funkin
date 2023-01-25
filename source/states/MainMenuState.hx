@@ -71,10 +71,10 @@ class MainMenuState extends MusicBeatState
 		var bg:FlxSprite;
 
 		if(utilities.Options.getData("menuBGs"))
-			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuBG')))
-				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/menuBG'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuBG')))
+				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/backgrounds' + '/menuBG'));
 			else
-				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuBG'));
+				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuBG'));
 		else
 			bg = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#FDE871"), false, "optimizedMenuBG");
 
@@ -90,10 +90,10 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 
 		if(utilities.Options.getData("menuBGs"))
-			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuDesat')))
-				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/menuDesat'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat')))
+				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/backgrounds' + '/menuDesat'));
 			else
-				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuDesat'));
+				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat'));
 		else
 			magenta = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 
@@ -113,10 +113,10 @@ class MainMenuState extends MusicBeatState
 		for (i in 0...optionShit.length)
 			{
 				var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-				if (!Assets.exists(Paths.image('main menu/' + Options.getData("uiSkin") + '/' + optionShit[i], 'preload')))
-					menuItem.frames = Paths.getSparrowAtlas('main menu/' + 'default' + '/' + optionShit[i], 'preload');
+				if (!Assets.exists(Paths.image('ui skins/' + Options.getData("uiSkin") + '/' + 'buttons/'+ optionShit[i], 'preload')))
+					menuItem.frames = Paths.getSparrowAtlas('ui skins/' + 'default' + '/' + 'buttons/'+ optionShit[i], 'preload');
 				else
-					menuItem.frames = Paths.getSparrowAtlas('main menu/' + Options.getData("uiSkin") + '/' + optionShit[i], 'preload');
+					menuItem.frames = Paths.getSparrowAtlas('ui skins/' + Options.getData("uiSkin") + '/' + 'buttons/'+ optionShit[i], 'preload');
 				menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 				menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
 				menuItem.animation.play('idle');
