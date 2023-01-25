@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 import flixel.util.FlxTimer;
 import game.Replay;
 import utilities.MusicUtilities;
@@ -33,9 +34,15 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var ui_Skin:Null<String>;
 
 	override function create()
 	{
+		if (ui_Skin == null)
+			ui_Skin = "default";
+
+		if (ui_Skin == "default")
+			ui_Skin = Options.getData("uiSkin");
 		if(PolymodHandler.metadataArrays.length > 0)
 			optionShit.push('mods');
 
@@ -64,7 +71,10 @@ class MainMenuState extends MusicBeatState
 		var bg:FlxSprite;
 
 		if(utilities.Options.getData("menuBGs"))
-			bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuBG')))
+				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/menuBG'));
+			else
+				bg = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuBG'));
 		else
 			bg = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#FDE871"), false, "optimizedMenuBG");
 
@@ -80,7 +90,10 @@ class MainMenuState extends MusicBeatState
 		add(camFollow);
 
 		if(utilities.Options.getData("menuBGs"))
-			magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuDesat')))
+				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + "default" + '/menuDesat'));
+			else
+				magenta = new FlxSprite(-80).loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuDesat'));
 		else
 			magenta = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 
@@ -98,18 +111,21 @@ class MainMenuState extends MusicBeatState
 		add(menuItems);
 
 		for (i in 0...optionShit.length)
-		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = Paths.getSparrowAtlas('main menu/' + optionShit[i], 'preload');
-			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
-			menuItem.animation.play('idle');
-			menuItem.ID = i;
-			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set(0.5, 0.5);
-			menuItem.antialiasing = true;
-		}
+			{
+				var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+				if (!Assets.exists(Paths.image('main menu/' + Options.getData("uiSkin") + '/' + optionShit[i], 'preload')))
+					menuItem.frames = Paths.getSparrowAtlas('main menu/' + 'default' + '/' + optionShit[i], 'preload');
+				else
+					menuItem.frames = Paths.getSparrowAtlas('main menu/' + Options.getData("uiSkin") + '/' + optionShit[i], 'preload');
+				menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
+				menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItem.screenCenter(X);
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set(0.5, 0.5);
+				menuItem.antialiasing = true;
+			}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 

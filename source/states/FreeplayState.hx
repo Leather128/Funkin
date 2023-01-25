@@ -81,8 +81,14 @@ class FreeplayState extends MusicBeatState {
 	public var loading_songs:Thread;
 	public var stop_loading_songs:Bool = false;
 	#end
+	var ui_Skin:Null<String>;
 
 	override function create() {
+		if (ui_Skin == null)
+			ui_Skin = "default";
+
+		if (ui_Skin == "default")
+			ui_Skin = Options.getData("uiSkin");
 		MusicBeatState.windowNameSuffix = " Freeplay";
 
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -145,7 +151,10 @@ class FreeplayState extends MusicBeatState {
 		}
 
 		if (utilities.Options.getData("menuBGs"))
-			bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/menuBG')))
+				bg = new FlxSprite().loadGraphic(Paths.image('ui skins/' + "default" + '/menuDesat'));
+			else
+				bg = new FlxSprite().loadGraphic(Paths.image('ui skins/' + ui_Skin + '/menuDesat'));
 		else
 			bg = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 
