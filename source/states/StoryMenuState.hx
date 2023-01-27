@@ -58,7 +58,10 @@ class StoryMenuState extends MusicBeatState {
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
-	override function create() {
+	override function create():Void {
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+			TitleState.playTitleMusic();
+
 		// UPDATE TITLE WINDOW JUST IN CASE LOL //
 		MusicBeatState.windowNameSuffix = " Story Menu";
 
