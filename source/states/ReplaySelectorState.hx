@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 import utilities.CoolUtil;
 import lime.app.Application;
 import openfl.Assets;
@@ -15,12 +16,15 @@ import flixel.FlxSprite;
 class ReplaySelectorState extends MusicBeatState
 {
     var replays:Array<String>;
+    var ui_Skin:Null<String>;
     static var selected:Int = 0;
 
     private var grpReplays:FlxTypedGroup<Alphabet>;
 
     public function new()
     {
+        if (ui_Skin == null || ui_Skin == "default")
+			ui_Skin = Options.getData("uiSkin");
         MusicBeatState.windowNameSuffix = " Replays";
 
         super();
@@ -28,7 +32,10 @@ class ReplaySelectorState extends MusicBeatState
         var menuBG:FlxSprite;
 
 		if(utilities.Options.getData("menuBGs"))
-			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat')))
+				menuBG = new FlxSprite().loadGraphic(Paths.image('ui skins/default/backgrounds/menuDesat'));
+			else
+				menuBG = new FlxSprite().loadGraphic(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat'));
 		else
 			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
 

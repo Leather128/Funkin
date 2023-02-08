@@ -153,7 +153,7 @@ class FreeplayState extends MusicBeatState {
 
 		if (utilities.Options.getData("menuBGs"))
 			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuBG')))
-				bg = new FlxSprite().loadGraphic(Paths.image('ui skins/' + "default" + '/backgrounds' + '/menuDesat'));
+				bg = new FlxSprite().loadGraphic(Paths.image('ui skins/default/backgrounds/menuDesat'));
 			else
 				bg = new FlxSprite().loadGraphic(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat'));
 		else
