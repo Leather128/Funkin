@@ -118,9 +118,8 @@ class StoryMenuState extends MusicBeatState {
 				}
 			}
 
-			if (controls.ACCEPT) {
+			if (controls.ACCEPT)
 				selectWeek();
-			}
 		}
 
 		if (controls.BACK && !movedBack && !selectedWeek) {
@@ -274,7 +273,13 @@ class StoryMenuState extends MusicBeatState {
 	var stopspamming:Bool = false;
 
 	function selectWeek() {
-		if (!stopspamming) {
+		PlayState.storyPlaylist = currentGroup.weeks[curWeek].songs;
+		var dif:String = curDifficulties[curDifficulty][0].toLowerCase();
+
+		var song_name:String = PlayState.storyPlaylist[0].toLowerCase();
+		var song_file:String = song_name + (dif == "normal" ? "" : "-" + dif);
+
+		if (!stopspamming && Assets.exists(Paths.json('song data/${song_name}/${song_file}'))) {
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 
 			if (utilities.Options.getData("flashingLights"))
@@ -285,14 +290,10 @@ class StoryMenuState extends MusicBeatState {
 
 			stopspamming = true;
 
-			PlayState.storyPlaylist = currentGroup.weeks[curWeek].songs;
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
-			var dif = curDifficulties[curDifficulty][0].toLowerCase();
-
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + (dif == "normal" ? "" : "-" + dif),
-				PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.SONG = Song.loadFromJson(song_file, song_name);
 			PlayState.storyWeek = curWeek;
 			PlayState.storyDifficultyStr = dif.toUpperCase();
 			PlayState.campaignScore = 0;
@@ -303,17 +304,12 @@ class StoryMenuState extends MusicBeatState {
 				PlayState.loadChartEvents = true;
 				LoadingState.loadAndSwitchState(new PlayState());
 			});
-		}
+		} else if (!Assets.exists(Paths.json('song data/${song_name}/${song_file}')))
+			CoolUtil.coolError('Error: ${Paths.json('song data/${song_name}/${song_file}')} not found!', "Leather Engine Crash Prevention");
 	}
 
 	function changeDifficulty(change:Int = 0):Void {
-		curDifficulty += change;
-
-		if (curDifficulty < 0)
-			curDifficulty = curDifficulties.length - 1;
-
-		if (curDifficulty > curDifficulties.length - 1)
-			curDifficulty = 0;
+		curDifficulty = FlxMath.wrap(curDifficulty + change, 0, curDifficulties.length - 1);
 
 		difficultySprite.loadGraphic(Paths.image("campaign menu/difficulties/" + curDifficulties[curDifficulty][1]));
 		difficultySprite.updateHitbox();
@@ -350,13 +346,7 @@ class StoryMenuState extends MusicBeatState {
 	var intendedScore:Int = 0;
 
 	function changeWeek(change:Int = 0):Void {
-		curWeek += change;
-
-		if (curWeek > currentGroup.weeks.length - 1)
-			curWeek = 0;
-
-		if (curWeek < 0)
-			curWeek = currentGroup.weeks.length - 1;
+		curWeek = FlxMath.wrap(curWeek + change, 0, currentGroup.weeks.length - 1);
 
 		var bullShit:Int = 0;
 
@@ -401,7 +391,7 @@ class StoryMenuState extends MusicBeatState {
 		changeWeek();
 	}
 
-	function updateText() {
+	function updateText():Void {
 		groupSwitchText.text = "<  " + currentGroup.groupName + "  >";
 
 		var curGroupWeek = currentGroup.weeks[curWeek];
@@ -440,32 +430,32 @@ class StoryMenuState extends MusicBeatState {
 		yellowBG.color = bgColor;
 	}
 
-	function loadJSON(name:String) {
-		var group:StoryGroup = cast Json.parse(Assets.getText(Paths.json("week data/" + name)));
+	function loadJSON(name:String):Void {
+		if (Assets.exists(Paths.json("week data/" + name))) {
+			var group:StoryGroup = cast Json.parse(Assets.getText(Paths.json("week data/" + name)));
 
-		for (week in group.weeks) {
-			var offsets:Map<String, Array<Float>> = [];
+			for (week in group.weeks) {
+				var offsets:Map<String, Array<Float>> = [];
 
-			if (week.difficultyOffsets != null) {
-				var week_offsets:Array<Array<Dynamic>> = week.difficultyOffsets;
+				if (week.difficultyOffsets != null) {
+					var week_offsets:Array<Array<Dynamic>> = week.difficultyOffsets;
 
-				for (offset in week_offsets) {
-					offsets.set(offset[0], offset[1]);
+					for (offset in week_offsets) {
+						offsets.set(offset[0], offset[1]);
+					}
 				}
+
+				week.difficultyOffsets = offsets;
 			}
 
-			week.difficultyOffsets = offsets;
-		}
-
-		groups.push(group);
+			groups.push(group);
+		} else
+			trace('Tried to load json ${Paths.json("week data/" + name)} that doesn\'t exist!', ERROR);
 	}
 
-	function loadGroups() {
-		var weeks = CoolUtil.coolTextFile(Paths.txt("storyWeekList"));
-
-		for (WeekName in weeks) {
-			loadJSON(WeekName);
-		}
+	function loadGroups():Void {
+		for (week in CoolUtil.coolTextFile(Paths.txt("storyWeekList")))
+			loadJSON(week);
 
 		currentGroup = groups[0];
 	}

@@ -6,6 +6,6 @@ function onEvent(name, position, argument1, argument2)
             alpha = 0.5
         end
 
-        setActorAlpha(alpha, getCharFromEvent(argument1))
+        set(charFromEvent(argument1) .. '.alpha', alpha)
     end
 end

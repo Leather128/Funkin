@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.util.FlxAxes;
 #if linc_luajit
 import flixel.addons.effects.FlxTrail;
 import flixel.text.FlxText;
@@ -46,6 +47,8 @@ class ModchartUtilities {
 
 	public static var lua_Sounds:Map<String, FlxSound> = [];
 	public static var lua_Shaders:Map<String, shaders.Shaders.ShaderEffect> = [];
+
+	public var functions_called:Array<String> = [];
 
 	function getActorByName(id:String):Dynamic {
 		// lua objects or what ever
@@ -95,6 +98,7 @@ class ModchartUtilities {
 	}
 
 	function callLua(func_name:String, args:Array<Dynamic>, ?type:String):Dynamic {
+		functions_called.push(func_name);
 		var result:Any = null;
 
 		Lua.getglobal(lua, func_name);
@@ -195,7 +199,8 @@ class ModchartUtilities {
 
 		setVar("curStep", 0);
 		setVar("curBeat", 0);
-		setVar("crochet", Conductor.stepCrochet);
+		setVar("stepCrochet", Conductor.stepCrochet);
+		setVar("crochet", Conductor.crochet);
 		setVar("safeZoneOffset", Conductor.safeZoneOffset);
 
 		setVar("hudZoom", PlayState.instance.camHUD.zoom);
@@ -275,6 +280,10 @@ class ModchartUtilities {
 
 		setVar("SONG", PlayState.SONG);
 
+		setVar("leatherEngine", {
+			version: lime.app.Application.current.meta.get('version'),
+		});
+
 		// callbacks
 
 		setLuaFunction("flashCamera", function(camera:String = "", color:String = "#FFFFFF", time:Float = 1, force:Bool = false) {
@@ -340,7 +349,7 @@ class ModchartUtilities {
 				getActorByName(id).makeGraphic(width, height, FlxColor.fromString(color));
 		});
 
-		setLuaFunction("makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
@@ -348,7 +357,7 @@ class ModchartUtilities {
 				if (filename != null && filename.length > 0)
 					Sprite.loadGraphic(Paths.image(PlayState.instance.stage.stage + "/" + filename, "stages"));
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -359,7 +368,7 @@ class ModchartUtilities {
 				CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
 		});
 
-		setLuaFunction("makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
@@ -367,7 +376,7 @@ class ModchartUtilities {
 				if (filename != null && filename.length > 0)
 					Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -379,7 +388,7 @@ class ModchartUtilities {
 		});
 
 		setLuaFunction("makeStageDancingSprite",
-			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool, ?sizeY:Float = null) {
 				if (!lua_Sprites.exists(id)) {
 					var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
@@ -387,7 +396,7 @@ class ModchartUtilities {
 					if (filename != null && filename.length > 0)
 						Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
 
-					Sprite.setGraphicSize(Std.int(Sprite.width * size));
+					Sprite.scale.set(size, sizeY == null ? size : sizeY);
 					Sprite.updateHitbox();
 
 					lua_Sprites.set(id, Sprite);
@@ -399,6 +408,13 @@ class ModchartUtilities {
 			});
 
 		// regular
+
+		setLuaFunction("exists", function(id:String):Bool {
+			if (getActorByName(id) != null)
+				return Reflect.getProperty(getActorByName(id), 'exists') != true ? false : true;
+
+			return false;
+		});
 
 		setLuaFunction("randomBool", function(chance:Float):Bool {
 			return FlxG.random.bool(chance);
@@ -426,9 +442,14 @@ class ModchartUtilities {
 			}
 
 			modchart.setupTheShitCuzPullRequestsSuck();
-			modchart.executeState("create", [PlayState.SONG.song.toLowerCase()]);
-			modchart.executeState("createPost", [PlayState.SONG.song.toLowerCase()]);
-			modchart.executeState("start", [PlayState.SONG.song.toLowerCase()]);
+
+			if (functions_called.contains("create"))
+				modchart.executeState("create", [PlayState.SONG.song.toLowerCase()]);
+			if (functions_called.contains("createPost"))
+				modchart.executeState("createPost", [PlayState.SONG.song.toLowerCase()]);
+			if (functions_called.contains("start"))
+				modchart.executeState("start", [PlayState.SONG.song.toLowerCase()]);
+
 			extra_scripts.push(modchart);
 		});
 
@@ -473,6 +494,18 @@ class ModchartUtilities {
 			return FlxColor.fromRGB(r, g, b, a);
 		});
 
+		// sprite functions
+
+		setLuaFunction("screenCenter", function(id:String, ?direction:String = "xy") {
+			if (getActorByName(id) != null)
+				getActorByName(id).screenCenter((direction.toLowerCase().contains('x') ? 0x01 : 0x00) + (direction.toLowerCase().contains('y') ? 0x10 : 0x00));
+		});
+
+		setLuaFunction("center", function(id:String, ?direction:String = "xy") {
+			if (getActorByName(id) != null)
+				getActorByName(id).screenCenter((direction.toLowerCase().contains('x') ? 0x01 : 0x00) + (direction.toLowerCase().contains('y') ? 0x10 : 0x00));
+		});
+
 		setLuaFunction("add", function(id:String) {
 			FlxG.state.add(getActorByName(id));
 		});
@@ -491,6 +524,20 @@ class ModchartUtilities {
 
 		setLuaFunction("insert", function(id:String, position:Int) {
 			FlxG.state.insert(position, getActorByName(id));
+		});
+
+		// stage sprite functions
+
+		setLuaFunction("addStage", function(id:String) {
+			PlayState.instance.stage.add(getActorByName(id));
+		});
+
+		setLuaFunction("removeStage", function(id:String, splice:Bool = true) {
+			PlayState.instance.stage.remove(getActorByName(id), splice);
+		});
+
+		setLuaFunction("insertStage", function(id:String, position:Int) {
+			PlayState.instance.stage.insert(position, getActorByName(id));
 		});
 
 		setLuaFunction("setActorTextColor", function(id:String, color:String) {
@@ -518,14 +565,14 @@ class ModchartUtilities {
 				CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
 		});
 
-		setLuaFunction("newSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("newSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
 				if (filename != null && filename.length > 0)
 					Sprite.loadGraphic(Paths.image(filename));
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -533,14 +580,14 @@ class ModchartUtilities {
 				CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
 		});
 
-		setLuaFunction("newAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("newAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
 				if (filename != null && filename.length > 0)
 					Sprite.frames = Paths.getSparrowAtlas(filename);
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -549,14 +596,14 @@ class ModchartUtilities {
 		});
 
 		setLuaFunction("newDancingSprite",
-			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool, ?sizeY:Float = null) {
 				if (!lua_Sprites.exists(id)) {
 					var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
 					if (filename != null && filename.length > 0)
 						Sprite.frames = Paths.getSparrowAtlas(filename);
 
-					Sprite.setGraphicSize(Std.int(Sprite.width * size));
+					Sprite.scale.set(size, sizeY == null ? size : sizeY);
 					Sprite.updateHitbox();
 
 					lua_Sprites.set(id, Sprite);
@@ -576,14 +623,14 @@ class ModchartUtilities {
 				CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
 		});
 
-		setLuaFunction("makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
 				if (filename != null && filename.length > 0)
 					Sprite.loadGraphic(Paths.image(filename));
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -593,14 +640,14 @@ class ModchartUtilities {
 				CoolUtil.coolError("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
 		});
 
-		setLuaFunction("makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
+		setLuaFunction("makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?sizeY:Float = null) {
 			if (!lua_Sprites.exists(id)) {
 				var Sprite:FlxSprite = new FlxSprite(x, y);
 
 				if (filename != null && filename.length > 0)
 					Sprite.frames = Paths.getSparrowAtlas(filename);
 
-				Sprite.setGraphicSize(Std.int(Sprite.width * size));
+				Sprite.scale.set(size, sizeY == null ? size : sizeY);
 				Sprite.updateHitbox();
 
 				lua_Sprites.set(id, Sprite);
@@ -611,14 +658,14 @@ class ModchartUtilities {
 		});
 
 		setLuaFunction("makeDancingSprite",
-			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+			function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool, ?sizeY:Float = null) {
 				if (!lua_Sprites.exists(id)) {
 					var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
 					if (filename != null && filename.length > 0)
 						Sprite.frames = Paths.getSparrowAtlas(filename);
 
-					Sprite.setGraphicSize(Std.int(Sprite.width * size));
+					Sprite.scale.set(size, sizeY == null ? size : sizeY);
 					Sprite.updateHitbox();
 
 					lua_Sprites.set(id, Sprite);
@@ -854,25 +901,21 @@ class ModchartUtilities {
 			if (PlayState.instance.notes.members[id] == null)
 				throw('error! you cannot set a rendered notes position when it doesnt exist! ID: ' + id);
 			else {
-				PlayState.instance.notes.members[id].modifiedByLua = true;
 				PlayState.instance.notes.members[id].x = x;
 				PlayState.instance.notes.members[id].y = y;
 			}
 		});
 
 		setLuaFunction("setRenderedNoteAlpha", function(alpha:Float, id:Int) {
-			PlayState.instance.notes.members[id].modifiedByLua = true;
 			PlayState.instance.notes.members[id].alpha = alpha;
 		});
 
 		setLuaFunction("setRenderedNoteScale", function(scale:Float, id:Int) {
-			PlayState.instance.notes.members[id].modifiedByLua = true;
-			PlayState.instance.notes.members[id].setGraphicSize(Std.int(PlayState.instance.notes.members[id].width * scale));
+			PlayState.instance.notes.members[id].scale.set(scale, scale);
 		});
 
 		setLuaFunction("setRenderedNoteScaleXY", function(scaleX:Int, scaleY:Int, id:Int) {
-			PlayState.instance.notes.members[id].modifiedByLua = true;
-			PlayState.instance.notes.members[id].setGraphicSize(scaleX, scaleY);
+			PlayState.instance.notes.members[id].scale.set(scaleX, scaleY);
 		});
 
 		setLuaFunction("getRenderedNoteWidth", function(id:Int) {
@@ -884,7 +927,6 @@ class ModchartUtilities {
 		});
 
 		setLuaFunction("setRenderedNoteAngle", function(angle:Float, id:Int) {
-			PlayState.instance.notes.members[id].modifiedByLua = true;
 			PlayState.instance.notes.members[id].angle = angle;
 		});
 
@@ -1079,12 +1121,12 @@ class ModchartUtilities {
 
 		setLuaFunction("setActorScale", function(scale:Float, id:String) {
 			if (getActorByName(id) != null)
-				getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
+				getActorByName(id).scale.set(scale, scale);
 		});
 
 		setLuaFunction("setActorScaleXY", function(scaleX:Float, scaleY:Float, id:String) {
 			if (getActorByName(id) != null)
-				getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scaleX), Std.int(getActorByName(id).height * scaleY));
+				getActorByName(id).scale.set(scaleX, scaleY);
 		});
 
 		setLuaFunction("setActorFlipX", function(flip:Bool, id:String) {
@@ -1763,9 +1805,8 @@ class ModchartUtilities {
 					if (seperated_path[i].contains('[')) {
 						var array = seperated_path[i].substr(0, seperated_path[i].indexOf('['));
 						object = Reflect.getProperty(object, array)[Std.parseInt(seperated_path[i].split(']')[0].split('[')[1])];
-					} else {
+					} else
 						object = Reflect.getProperty(object, seperated_path[i]);
-					}
 				} else
 					property = seperated_path[i];
 			}
@@ -1786,14 +1827,9 @@ class ModchartUtilities {
 			var property:String = property;
 
 			for (i in 1...seperated_path.length) {
-				if (i < seperated_path.length - 1) {
-					if (seperated_path[i].contains('[')) {
-						var array = seperated_path[i].substr(0, seperated_path[i].indexOf('['));
-						object = Reflect.getProperty(object, array)[Std.parseInt(seperated_path[i].split(']')[0].split('[')[1])];
-					} else {
-						object = Reflect.getProperty(object, seperated_path[i]);
-					}
-				} else
+				if (i < seperated_path.length - 1)
+					object = Reflect.getProperty(object, seperated_path[i]);
+				else
 					property = seperated_path[i];
 			}
 
@@ -1817,11 +1853,9 @@ class ModchartUtilities {
 					if (seperated_path[i].contains('[')) {
 						var array = seperated_path[i].substr(0, seperated_path[i].indexOf('['));
 						object = Reflect.getProperty(object, array)[Std.parseInt(seperated_path[i].split(']')[0].split('[')[1])];
-					} else {
+					} else
 						object = Reflect.getProperty(object, seperated_path[i]);
-					}	
-				}
-				else
+				} else
 					property = seperated_path[i];
 			}
 
@@ -1835,14 +1869,8 @@ class ModchartUtilities {
 
 			if (seperated_path.length > 1) {
 				for (i in 0...seperated_path.length) {
-					if (i < seperated_path.length - 1) {
-						if (seperated_path[i].contains('[')) {
-							var array = seperated_path[i].substr(0, seperated_path[i].indexOf('['));
-							object = Reflect.getProperty(object, array)[Std.parseInt(seperated_path[i].split(']')[0].split('[')[1])];
-						} else {
-							object = Reflect.getProperty(object, seperated_path[i]);
-						}
-					}
+					if (i < seperated_path.length - 1)
+						object = Reflect.getProperty(object, seperated_path[i]);
 					else
 						property = seperated_path[i];
 				}
@@ -1947,13 +1975,10 @@ class ModchartUtilities {
 
 				Conductor.recalculateStuff(PlayState.songMultiplier);
 
-				#if cpp
-				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+				FlxG.sound.music.pitch = PlayState.songMultiplier;
 
 				if (PlayState.instance.vocals.playing)
-					lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH,
-						PlayState.songMultiplier);
-				#end
+					PlayState.instance.vocals.pitch = PlayState.songMultiplier;
 
 				PlayState.instance.stopSong = true;
 			}
@@ -1991,6 +2016,19 @@ class ModchartUtilities {
 			return eventId;
 		});
 
+		setLuaFunction("charFromEvent", function(id:String) {
+			switch (id.toLowerCase()) {
+				case "girlfriend" | "gf" | "player3" | "2":
+					return "girlfriend";
+				case "dad" | "opponent" | "player2" | "1":
+					return "dad";
+				case "bf" | "boyfriend" | "player" | "player1" | "0":
+					return "boyfriend";
+			}
+
+			return id;
+		});
+
 		// shader bullshit
 
 		setLuaFunction("setActor3DShader", function(id:String, ?speed:Float = 3, ?frequency:Float = 10, ?amplitude:Float = 0.25) {
@@ -2022,6 +2060,7 @@ class ModchartUtilities {
 
 		executeState("onCreate", []);
 		executeState("createLua", []);
+		executeState("new", []);
 	}
 
 	public function setupTheShitCuzPullRequestsSuck() {

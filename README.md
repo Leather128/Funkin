@@ -61,3 +61,5 @@ You can load, share, and play replays of songs you've played! They can even be i
 - ShadowMario - Color Swap Shader (for notes and stuffs) + some really weird modchart stuff that im too stupid to know lol
 
 - Smokey555 - Adobe Animate Spritemap -> FlxFramesCollection Support
+
+- larsiusprime + Polymod Contributors - [polymod](https://github.com/larsiusprime/polymod) (funny cool mod loader!!!)

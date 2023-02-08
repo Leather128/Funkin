@@ -5,8 +5,7 @@ import haxe.Json;
 
 using StringTools;
 
-typedef Cutscene =
-{
+typedef Cutscene = {
 	var type:String;
 	var cutsceneAfter:Null<String>;
 
@@ -23,8 +22,7 @@ typedef Cutscene =
 	var dialogueBoxFlips:Null<Bool>;
 }
 
-typedef DialogueSection =
-{
+typedef DialogueSection = {
 	var side:String;
 
 	var showOtherPortrait:Bool;
@@ -40,8 +38,7 @@ typedef DialogueSection =
 	var hand_Sprite:DialogueObject;
 }
 
-typedef DialogueObject =
-{
+typedef DialogueObject = {
 	var sprite:String;
 
 	var x:Float;
@@ -54,8 +51,7 @@ typedef DialogueObject =
 	var fps:Null<Int>;
 }
 
-typedef DialogueText =
-{
+typedef DialogueText = {
 	var text:String;
 	var font:String;
 	var sound:String;
@@ -72,8 +68,7 @@ typedef DialogueText =
 	var text_Delay:Null<Float>;
 }
 
-class CutsceneUtil
-{
+class CutsceneUtil {
 	public static function loadFromJson(jsonPath:String):Cutscene
 		return parseJSONshit(Assets.getText(Paths.json("cutscenes/" + jsonPath)).trim());
 

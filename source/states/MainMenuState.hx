@@ -38,11 +38,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if (ui_Skin == null)
-			ui_Skin = "default";
-
-		if (ui_Skin == "default")
+		if (ui_Skin == null || ui_Skin == "default")
 			ui_Skin = Options.getData("uiSkin");
+		
 		if(PolymodHandler.metadataArrays.length > 0)
 			optionShit.push('mods');
 

@@ -1,7 +1,6 @@
 function onEvent(name, position, argument1, argument2)
     if string.lower(name) == "3d shader" then
-        local actor = getCharFromEvent(argument1)
-
+        local actor = charFromEvent(argument1)
         local funnySplit = splitString(argument2, ",")
 
         setActor3DShader(actor, tonumber(funnySplit[1]), tonumber(funnySplit[2]), tonumber(funnySplit[3]))

@@ -339,13 +339,9 @@ class StageGroup extends FlxGroup {
 	}
 
 	public function createLuaStuff() {
-		#if linc_luajit
-		#if polymod // change this in future whenever custom backend
-		if (stage_Data != null) {
-			if (stage_Data.scriptName != null && Assets.exists(Paths.lua("stage data/" + stage_Data.scriptName)))
+		#if (linc_luajit && polymod)
+		if (stage_Data != null && stage_Data.scriptName != null && Assets.exists(Paths.lua("stage data/" + stage_Data.scriptName)))
 				stageScript = ModchartUtilities.createModchartUtilities(PolymodAssets.getPath(Paths.lua("stage data/" + stage_Data.scriptName)));
-		}
-		#end
 		#end
 	}
 
@@ -358,7 +354,7 @@ class StageGroup extends FlxGroup {
 
 		if (p2 == null)
 			p2 = PlayState.dad;
-
+ 
 		p1.setPosition((player_1_Point.x - (p1.width / 2)) + p1.positioningOffset[0], (player_1_Point.y - p1.height) + p1.positioningOffset[1]);
 		gf.setPosition((gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]);
 		p2.setPosition((player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]);
@@ -441,7 +437,7 @@ class StageGroup extends FlxGroup {
 	public function beatHit() {
 		if (utilities.Options.getData("animatedBGs")) {
 			for (sprite in onBeatHit_Group) {
-				sprite.animation.play("beatHit", true);
+				sprite.animation.play("beatHit");
 			}
 
 			if (stage.startsWith('school'))

@@ -11,8 +11,7 @@ import flixel.FlxSprite;
 
 using StringTools;
 
-class Note extends FlxSprite
-{
+class Note extends FlxSprite {
 	public var strumTime:Float = 0;
 
 	public var mustPress:Bool = false;
@@ -34,10 +33,6 @@ class Note extends FlxSprite
 
 	public var rawNoteData:Int = 0;
 
-	public var modifiedByLua:Bool;
-	public var modAngle:Float = 0;
-	public var localAngle:Float = 0;
-
 	public var character:Int = 0;
 
 	public var characters:Array<Int> = [];
@@ -55,8 +50,7 @@ class Note extends FlxSprite
 	public var inEditor:Bool = false;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default",
-			?song:SwagSong, ?characters:Array<Int>, ?mustPress:Bool = false, ?inEditor:Bool = false)
-	{
+			?song:SwagSong, ?characters:Array<Int>, ?mustPress:Bool = false, ?inEditor:Bool = false) {
 		super();
 
 		if (prevNote == null)
@@ -97,10 +91,8 @@ class Note extends FlxSprite
 
 		if (isSustainNote)
 			scale.set(lmaoStuff,
-				Std.parseFloat(PlayState.instance.ui_settings[0]) *
-				(Std.parseFloat(PlayState.instance.ui_settings[2]) -
-				(Std.parseFloat(PlayState.instance.mania_size[3])))
-			);
+				Std.parseFloat(PlayState.instance.ui_settings[0]) * (Std.parseFloat(PlayState.instance.ui_settings[2])
+					- (Std.parseFloat(PlayState.instance.mania_size[3]))));
 		else
 			scale.set(lmaoStuff, lmaoStuff);
 
@@ -111,8 +103,7 @@ class Note extends FlxSprite
 		x += swagWidth * noteData;
 		animation.play("default");
 
-		if (!PlayState.instance.arrow_Configs.exists(arrow_Type))
-		{
+		if (!PlayState.instance.arrow_Configs.exists(arrow_Type)) {
 			if (PlayState.instance.types.contains(arrow_Type))
 				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFile(Paths.txt("ui skins/" + song.ui_Skin + "/" + arrow_Type)));
 			else
@@ -129,8 +120,7 @@ class Note extends FlxSprite
 
 		if (PlayState.instance.type_Configs.get(arrow_Type)[4] != null)
 			playMissOnMiss = PlayState.instance.type_Configs.get(arrow_Type)[4] == "true";
-		else
-		{
+		else {
 			if (shouldHit)
 				playMissOnMiss = true;
 			else
@@ -143,8 +133,7 @@ class Note extends FlxSprite
 		if (utilities.Options.getData("downscroll") && sustainNote)
 			flipY = true;
 
-		if (isSustainNote && prevNote != null)
-		{
+		if (isSustainNote && prevNote != null) {
 			alpha = 0.6;
 
 			if (song.ui_Skin != 'pixel')
@@ -159,9 +148,9 @@ class Note extends FlxSprite
 			if (song.ui_Skin == 'pixel')
 				x += 30;
 
-			if (prevNote.isSustainNote)
-			{
-				prevNote.animation.play("hold");
+			if (prevNote.isSustainNote) {
+				if (prevNote.animation != null)
+					prevNote.animation.play("hold");
 
 				var speed = song.speed;
 
@@ -178,14 +167,12 @@ class Note extends FlxSprite
 
 		var affectedbycolor:Bool = false;
 
-		if (PlayState.instance.arrow_Configs.get(arrow_Type)[5] != null)
-		{
+		if (PlayState.instance.arrow_Configs.get(arrow_Type)[5] != null) {
 			if (PlayState.instance.arrow_Configs.get(arrow_Type)[5] == "true")
 				affectedbycolor = true;
 		}
 
-		if (affectedbycolor)
-		{
+		if (affectedbycolor) {
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
 
@@ -197,43 +184,32 @@ class Note extends FlxSprite
 		}
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
-
-		angle = modAngle + localAngle;
 
 		calculateCanBeHit();
 
-		if (!inEditor)
-		{
-			if (tooLate)
-			{
+		if (!inEditor) {
+			if (tooLate) {
 				if (alpha > 0.3)
 					alpha = 0.3;
 			}
 		}
 	}
 
-	public function calculateCanBeHit()
-	{
-		if (this != null)
-		{
-			if (mustPress)
-			{
+	public function calculateCanBeHit() {
+		if (this != null) {
+			if (mustPress) {
 				/**
 					TODO: make this shit use something from the arrow config .txt file
 				**/
-				if (shouldHit)
-				{
+				if (shouldHit) {
 					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
 						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
 						canBeHit = true;
 					else
 						canBeHit = false;
-				}
-				else
-				{
+				} else {
 					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
 						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
 						canBeHit = true;
@@ -243,9 +219,7 @@ class Note extends FlxSprite
 
 				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 					tooLate = true;
-			}
-			else
-			{
+			} else {
 				canBeHit = false;
 
 				if (strumTime <= Conductor.songPosition)
@@ -255,8 +229,7 @@ class Note extends FlxSprite
 	}
 }
 
-typedef NoteType =
-{
+typedef NoteType = {
 	var shouldHit:Bool;
 
 	var hitDamage:Float;

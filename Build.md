@@ -19,6 +19,7 @@ haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 haxelib git openfl https://github.com/openfl/openfl
 haxelib git hxCodec https://github.com/polybiusproxy/hxCodec
 haxelib git linc_luajit https://github.com/Leather128/linc_luajit.git
+haxelib git flixelTextureAtlas https://github.com/Smokey555/Flixel-TextureAtlas.git
 ```
 
 ## IMPORTANT: use the latest stable polymod not git please

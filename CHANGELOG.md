@@ -11,21 +11,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Zoom in the chart edtior.
 - Lots of new functions and variables in the Lua API. See the wiki!
+- `singDuration` property to character jsons to control their sing duration.
+- Flixel Splash Screen option to toggle the HaxeFlixel splash screen that shows up when the game starts.
+- Icons now bump to the song playing when you play it with the space bar in freeplay.
+- When using the default time bar style the time bar color changes depending on what character is currently in focus.
+- Score text changed to use the format `<  Score:$score ~ Misses:$misses ~ Accuracy:$accuracy% ~ $comboRating ~ $rating  >
+- Animation Debug now has a toggleable stage and a character position dot to help with offsets.
+- You can now switch what side you are using to edit offsets on in Animation Debug.
 
 ### Fixed
 
-- Bugs with charting state (specifically `specialAudioName` not working in it).
+- Bug with charting state (specifically `specialAudioName` not working in it).
 - Bug where you can go to negative song position in the charter.
 - Bug where the ui skin menu opens when opening the `Note Options` section in the options menu.
 - Bug where the game would crash in the pause menu when `Prototype Title Screen` is on.
 - Bug where the game would crash when opening the ui skin menu with an invalid ui skin in your save data.
 - Bug with anything that would normally open the 'application error' window that crashed on Linux.
+- Bug where pause menu music wouldn't disappear after closing the menu.
+- Bug where the game crashes when trying to load a song or week set that does not exist in story mode.
+- Animations now play when character will idle is true like how they would in psych (aka animation fully plays then once it stops the character idles).
+- That one bug where characters that dance left and right would be slower than needed at high bpms.
+- Difficulty specific audio not playing in freeplay (Linux).
+- `crochet` now links to `Conductor.crochet` instead of `Conductor.stepCrochet` in lua (WARNING: This fix may accidentally break some obsecure scripts, to fix them use the new `stepCrochet` variable instead).
+- Some alphabet font characters having the wrong name internally, causing them to not appear correctly in-game.
+- Not being able to set note or strum angles in lua.
+- Pause Menu now uses it's own camera so that it isn't affected by the game's ui zoom.
+- Event Luas now have the `create()` function called on them just like the rest of the game's lua.
 
 ### Changed
 
 - The option `Import Old Scores` is now in `Misc`.
 - Optimized Note Splash spawning.
 - Optimized Score text and Info text in PlayState.
+- Pause menu music is now cached at the start of each song to prevent lag when opening the menu.
+- Freeplay no longer has < > when the selected song has one difficulty.
+- Info text now goes onto the time bar in the leather engine time bar style.
+- Stage sprites that use the `beatHit` animation no longer are forced to play it every beat (if it's already playing it won't play until it's not).
+- Newgrounds Logo in Title Screen has been replaced by the Polymod Logo.
+- Tutorial's camera zoom now acts like it does in base game* (not exactly the same, but close enough, and a less janky way as well).
+- Some miscellaneous ui changes in-game.
 
 ## [0.4.2] - 6/14/2022
 

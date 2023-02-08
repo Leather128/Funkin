@@ -3,6 +3,7 @@
     "dancesLeftAndRight": false,
     "imagePath": "DADDY_DEAREST",
     "barColor":  [199, 111, 211],
+    "singDuration": 6.1,
     "animations": [
         {
             "name": "idle",

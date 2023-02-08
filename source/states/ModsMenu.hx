@@ -1,7 +1,7 @@
 package states;
 
-import utilities.Options;
 #if sys
+import utilities.Options;
 import ui.ModIcon;
 import modding.ModList;
 import modding.PolymodHandler;
@@ -46,11 +46,9 @@ class ModsMenu extends MusicBeatState
 
 	override function create()
 	{
-		if (ui_Skin == null)
-			ui_Skin = "default";
-
-		if (ui_Skin == "default")
+		if (ui_Skin == null || ui_Skin == "default")
 			ui_Skin = Options.getData("uiSkin");
+
 		MusicBeatState.windowNameSuffix = " Mods Menu";
 
 		instance = this;

@@ -31,13 +31,15 @@ class MusicBeatState extends FlxUIState
 
 	override public function new()
 	{
-		/*#if polymod
-		polymod.Polymod.clearCache();
-		#end
-			
-		#if sys
-		openfl.system.System.gc();	
-		#end*/
+		if (!utilities.Options.getData('memoryLeaks')) {
+			#if polymod
+			polymod.Polymod.clearCache();
+			#end
+				
+			#if sys
+			openfl.system.System.gc();	
+			#end
+		}
 
 		super();
 	}
@@ -67,6 +69,11 @@ class MusicBeatState extends FlxUIState
 
 		if(FlxG.keys.checkStatus(FlxKey.fromString(utilities.Options.getData("fullscreenBind", "binds")), FlxInputState.JUST_PRESSED))
 			FlxG.fullscreen = !FlxG.fullscreen;
+		
+		#if debug
+		if (FlxG.keys.justPressed.F5) 
+			FlxG.resetState();
+		#end
 
 		FlxG.autoPause = utilities.Options.getData("autoPause");
 

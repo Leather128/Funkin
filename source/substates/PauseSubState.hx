@@ -1,5 +1,6 @@
 package substates;
 
+import flixel.FlxCamera;
 import game.Conductor;
 import game.Replay;
 import states.ReplaySelectorState;
@@ -16,8 +17,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 
-class PauseSubState extends MusicBeatSubstate
-{
+class PauseSubState extends MusicBeatSubstate {
 	var grpMenuShit:FlxTypedGroup<Alphabet> = new FlxTypedGroup<Alphabet>();
 
 	var curSelected:Int = 0;
@@ -35,14 +35,17 @@ class PauseSubState extends MusicBeatSubstate
 	var scoreWarning:FlxText = new FlxText(20, 15 + 64, 0, "Remember, changing options invalidates your score!", 32);
 	var warningAmountLols:Int = 0;
 
-	public function new()
-	{
+	var pauseCamera:FlxCamera = new FlxCamera();
+
+	public function new() {
 		super();
+
+		pauseCamera.bgColor.alpha = 0;
+		FlxG.cameras.add(pauseCamera, false);
 
 		var optionsArray = menus.get("options");
 
-		switch(utilities.Options.getData("playAs"))
-		{
+		switch (utilities.Options.getData("playAs")) {
 			case "bf":
 				optionsArray.push("Play As BF");
 				menus.set("options", optionsArray);
@@ -59,7 +62,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		pauseMusic.volume = 0;
 		pauseMusic.play();
-
 		FlxG.sound.list.add(pauseMusic);
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -102,13 +104,12 @@ class PauseSubState extends MusicBeatSubstate
 
 		updateAlphabets();
 
-		cameras = [PlayState.instance.camHUD];
+		cameras = [pauseCamera];
 	}
 
 	var justPressedAcceptLol:Bool = true;
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		if (pauseMusic.volume < 0.5)
 			pauseMusic.volume += 0.01 * elapsed;
 
@@ -118,11 +119,10 @@ class PauseSubState extends MusicBeatSubstate
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
 
-		if(!accepted)
+		if (!accepted)
 			justPressedAcceptLol = false;
 
-		switch(warningAmountLols)
-		{
+		switch (warningAmountLols) {
 			case 2:
 				scoreWarning.text = "Remember? Changing options invalidates your score.";
 			case 3:
@@ -168,18 +168,17 @@ class PauseSubState extends MusicBeatSubstate
 		if (downP)
 			changeSelection(1);
 
-		if(accepted && !justPressedAcceptLol)
-		{
+		if (accepted && !justPressedAcceptLol) {
 			justPressedAcceptLol = true;
 
 			var daSelected:String = menus.get(menu)[curSelected];
 
-			switch(daSelected.toLowerCase())
-			{
+			switch (daSelected.toLowerCase()) {
 				case "resume":
 					pauseMusic.stop();
 					pauseMusic.destroy();
-					
+					FlxG.sound.list.remove(pauseMusic);
+					FlxG.cameras.remove(pauseCamera);
 					close();
 				case "restart song":
 					menu = "restart";
@@ -189,8 +188,7 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.playCutscenes = true;
 
 					#if linc_luajit
-					if (PlayState.luaModchart != null)
-					{
+					if (PlayState.luaModchart != null) {
 						PlayState.luaModchart.die();
 						PlayState.luaModchart = null;
 					}
@@ -198,14 +196,18 @@ class PauseSubState extends MusicBeatSubstate
 
 					PlayState.SONG.keyCount = PlayState.instance.ogKeyCount;
 					PlayState.SONG.playerKeyCount = PlayState.instance.ogPlayerKeyCount;
+
+					pauseMusic.stop();
+					pauseMusic.destroy();
+					FlxG.sound.list.remove(pauseMusic);
+					FlxG.cameras.remove(pauseCamera);
 
 					FlxG.resetState();
 				case "with cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 
 					#if linc_luajit
-					if (PlayState.luaModchart != null)
-					{
+					if (PlayState.luaModchart != null) {
 						PlayState.luaModchart.die();
 						PlayState.luaModchart = null;
 					}
@@ -213,6 +215,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					PlayState.SONG.keyCount = PlayState.instance.ogKeyCount;
 					PlayState.SONG.playerKeyCount = PlayState.instance.ogPlayerKeyCount;
+
+					pauseMusic.stop();
+					pauseMusic.destroy();
+					FlxG.sound.list.remove(pauseMusic);
+					FlxG.cameras.remove(pauseCamera);
 
 					FlxG.resetState();
 				case "bot":
@@ -242,7 +249,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "ghost tapping":
 					utilities.Options.setData(!utilities.Options.getData("ghostTapping"), "ghostTapping");
 
-					if(utilities.Options.getData("ghostTapping")) // basically making it easier lmao
+					if (utilities.Options.getData("ghostTapping")) // basically making it easier lmao
 						PlayState.SONG.validScore = false;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -257,15 +264,18 @@ class PauseSubState extends MusicBeatSubstate
 					updateAlphabets();
 				case "exit to menu":
 					#if linc_luajit
-					if (PlayState.luaModchart != null)
-					{
+					if (PlayState.luaModchart != null) {
 						PlayState.luaModchart.die();
 						PlayState.luaModchart = null;
 					}
 					#end
 
-					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
-					{
+					pauseMusic.stop();
+					pauseMusic.destroy();
+					FlxG.sound.list.remove(pauseMusic);
+					FlxG.cameras.remove(pauseCamera);
+
+					if (PlayState.playingReplay && Replay.getReplayList().length > 0) {
 						Conductor.offset = utilities.Options.getData("songOffset");
 
 						@:privateAccess
@@ -275,9 +285,7 @@ class PauseSubState extends MusicBeatSubstate
 						}
 
 						FlxG.switchState(new ReplaySelectorState());
-					}
-					else
-					{
+					} else {
 						if (PlayState.isStoryMode)
 							FlxG.switchState(new StoryMenuState());
 						else
@@ -288,7 +296,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "no death":
 					utilities.Options.setData(!utilities.Options.getData("noDeath"), "noDeath");
 
-					if(utilities.Options.getData("noDeath"))
+					if (utilities.Options.getData("noDeath"))
 						PlayState.SONG.validScore = false;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -302,8 +310,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					optionsArray.remove(daSelected);
 
-					switch(utilities.Options.getData("playAs"))
-					{
+					switch (utilities.Options.getData("playAs")) {
 						case "bf":
 							optionsArray.push("Play As BF");
 							menus.set("options", optionsArray);
@@ -333,8 +340,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					optionsArray.remove(daSelected);
 
-					switch(utilities.Options.getData("playAs"))
-					{
+					switch (utilities.Options.getData("playAs")) {
 						case "bf":
 							optionsArray.push("Play As BF");
 							menus.set("options", optionsArray);
@@ -361,12 +367,10 @@ class PauseSubState extends MusicBeatSubstate
 		}
 	}
 
-	function updateAlphabets()
-	{
+	function updateAlphabets() {
 		grpMenuShit.clear();
 
-		for (i in 0...menus.get(menu).length)
-		{
+		for (i in 0...menus.get(menu).length) {
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menus.get(menu)[i], true);
 			songText.isMenuItem = true;
 			songText.targetY = i;
@@ -378,10 +382,9 @@ class PauseSubState extends MusicBeatSubstate
 		changeSelection();
 	}
 
-	function changeSelection(change:Int = 0):Void
-	{
+	function changeSelection(change:Int = 0):Void {
 		FlxG.sound.play(Paths.sound('scrollMenu'));
-		
+
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -391,8 +394,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		var bullShit:Int = 0;
 
-		for (item in grpMenuShit.members)
-		{
+		for (item in grpMenuShit.members) {
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 

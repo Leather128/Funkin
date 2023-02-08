@@ -222,10 +222,7 @@ class AlphaCharacter extends FlxSprite {
 	}
 
 	public function createLetter(letter:String):Void {
-		var letterCase:String = "lowercase";
-
-		if (letter.toLowerCase() != letter)
-			letterCase = 'capital';
+		var letterCase:String = letter.toLowerCase() != letter ? "capital" : "lowercase";
 
 		animation.addByPrefix(letter, letter + " " + letterCase + '0', 24);
 		animation.play(letter);

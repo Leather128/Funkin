@@ -6,16 +6,14 @@ import ui.SimpleInfoDisplay;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 
-class Main extends Sprite
-{
-	public function new()
-	{
+class Main extends Sprite {
+	public function new() {
 		super();
 
 		CoolUtil.haxe_trace = haxe.Log.trace;
 		haxe.Log.trace = CoolUtil.haxe_print;
 
-		addChild(new FlxGame(0, 0, states.TitleState));
+		addChild(new FlxGame(0, 0, states.TitleState, 60, 60, true));
 
 		#if !mobile
 		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF, "_sans");
@@ -30,7 +28,7 @@ class Main extends Sprite
 
 	public static function toggleMem(memEnabled:Bool):Void
 		display.infoDisplayed[1] = memEnabled;
-	
+
 	public static function toggleVers(versEnabled:Bool):Void
 		display.infoDisplayed[2] = versEnabled;
 

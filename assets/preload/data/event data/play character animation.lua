@@ -6,6 +6,6 @@ function onEvent(name, position, argument1, argument2)
             anim = "idle"
         end
 
-        playCharacterAnimation(getCharFromEvent(argument1), anim, true)
+        playCharAnim(charFromEvent(argument1), anim, true)
     end
 end

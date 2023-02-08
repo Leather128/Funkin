@@ -83,7 +83,7 @@ class OptionsMenu extends MusicBeatState {
 			#end
 			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
 			new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
-			new GameStateOption("Character Creator", 4, new CharacterCreationState("bf")),
+			// new GameStateOption("Character Creator", 4, new CharacterCreationState("bf")),
 			new GameSubstateOption("Import Old Scores", 5, substates.ImportHighscoresSubstate)
 		],
 		[
@@ -101,7 +101,8 @@ class OptionsMenu extends MusicBeatState {
 			new BoolOption("Disable Debug Menus", "disableDebugMenus", 10),
 			new BoolOption("Invisible Notes", "invisibleNotes", 11),
 			new BoolOption("Auto Pause", "autoPause", 12),
-			new BoolOption("Freeplay Corruption", "loadAsynchronously", 13)
+			new BoolOption("Freeplay Corruption", "loadAsynchronously", 13),
+			new BoolOption("Flixel Splash Screen", "flixelStartupScreen", 14),
 		],
 		[
 			"Optimizations",
@@ -112,7 +113,8 @@ class OptionsMenu extends MusicBeatState {
 			new BoolOption("Menu Backgrounds", "menuBGs", 4),
 			new BoolOption("Optimized Characters", "optimizedChars", 5),
 			new BoolOption("Animated Backgrounds", "animatedBGs", 6),
-			new BoolOption("Preload Stage Events", "preloadChangeBGs", 7)
+			new BoolOption("Preload Stage Events", "preloadChangeBGs", 7),
+			new BoolOption("Memory Leaks", "memoryLeaks", 8),
 		],
 		[
 			"Info Display",
@@ -172,11 +174,9 @@ class OptionsMenu extends MusicBeatState {
 	public static var instance:OptionsMenu;
 
 	override function create():Void {
-		if (ui_Skin == null)
-			ui_Skin = "default";
-
-		if (ui_Skin == "default")
+		if (ui_Skin == null || ui_Skin == "default")
 			ui_Skin = Options.getData("uiSkin");
+
 		if (PlayState.instance == null) {
 			pages[3][2] = null;
 			#if debug
@@ -185,11 +185,9 @@ class OptionsMenu extends MusicBeatState {
 		}
 
 		MusicBeatState.windowNameSuffix = "";
-
 		instance = this;
 
 		var menuBG:FlxSprite;
-
 
 		if(utilities.Options.getData("menuBGs"))
 			if (!Assets.exists(Paths.image('ui skins/' + ui_Skin + '/backgrounds' + '/menuDesat')))

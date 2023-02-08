@@ -4,73 +4,61 @@ import flixel.system.FlxAssets;
 
 using StringTools;
 
-class Shaders
-{
-    public static function newEffect(?name:String = "3d"):Dynamic
-    {
-        switch(name.toLowerCase())
-        {
-            case "3d":
-                return new ThreeDEffect();
-        }
+class Shaders {
+	public static function newEffect(?name:String = "3d"):Dynamic {
+		switch (name.toLowerCase()) {
+			case "3d":
+				return new ThreeDEffect();
+		}
 
-        return new ThreeDEffect();
-    }
+		return new ThreeDEffect();
+	}
 }
 
-class ShaderEffect
-{
-    public function update(elapsed:Float)
-    {
-        // nothing yet
-    }
+class ShaderEffect {
+	public function update(elapsed:Float) {
+		// nothing yet
+	}
 }
 
-class ThreeDEffect extends ShaderEffect
-{
-    public var shader(default,null):ThreeDShader = new ThreeDShader();
+class ThreeDEffect extends ShaderEffect {
+	public var shader(default, null):ThreeDShader = new ThreeDShader();
 
-    public var waveSpeed(default, set):Float = 0;
+	public var waveSpeed(default, set):Float = 0;
 	public var waveFrequency(default, set):Float = 0;
 	public var waveAmplitude(default, set):Float = 0;
 
-	public function new():Void
-	{
+	public function new():Void {
 		shader.uTime.value = [0];
 	}
 
-    override public function update(elapsed:Float):Void
-    {
-        super.update(elapsed);
+	override public function update(elapsed:Float):Void {
+		super.update(elapsed);
 
-        shader.uTime.value[0] += elapsed;
-    }
+		shader.uTime.value[0] += elapsed;
+	}
 
-    function set_waveSpeed(v:Float):Float
-    {
-        waveSpeed = v;
-        shader.uSpeed.value = [waveSpeed];
-        return v;
-    }
-    
-    function set_waveFrequency(v:Float):Float
-    {
-        waveFrequency = v;
-        shader.uFrequency.value = [waveFrequency];
-        return v;
-    }
-    
-    function set_waveAmplitude(v:Float):Float
-    {
-        waveAmplitude = v;
-        shader.uWaveAmplitude.value = [waveAmplitude];
-        return v;
-    }
+	function set_waveSpeed(v:Float):Float {
+		waveSpeed = v;
+		shader.uSpeed.value = [waveSpeed];
+		return v;
+	}
+
+	function set_waveFrequency(v:Float):Float {
+		waveFrequency = v;
+		shader.uFrequency.value = [waveFrequency];
+		return v;
+	}
+
+	function set_waveAmplitude(v:Float):Float {
+		waveAmplitude = v;
+		shader.uWaveAmplitude.value = [waveAmplitude];
+		return v;
+	}
 }
 
-class ThreeDShader extends FlxShader
-{
-    @:glFragmentSource('
+class ThreeDShader extends FlxShader {
+	@:glFragmentSource('
     #pragma header
     //uniform float tx, ty; // x,y waves phase
 
@@ -110,9 +98,7 @@ class ThreeDShader extends FlxShader
         vec2 uv = sineWave(openfl_TextureCoordv);
         gl_FragColor = texture2D(bitmap, uv);
     }')
-
-    public function new()
-    {
-       super();
-    }
+	public function new() {
+		super();
+	}
 }

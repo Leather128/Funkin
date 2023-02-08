@@ -11,6 +11,7 @@ typedef CharacterConfig =
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;
 	var cameraOffset:Array<Float>;
+	var singDuration:Null<Float>;
 
 	var offsetsFlipWhenPlayer:Null<Bool>;
 	var offsetsFlipWhenEnemy:Null<Bool>;

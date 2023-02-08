@@ -230,10 +230,10 @@
 	<SubTexture name="A bold0001" x="599" y="142" width="54" height="67"/>
 	<SubTexture name="A bold0002" x="654" y="142" width="54" height="67"/>
 	<SubTexture name="A bold0003" x="654" y="142" width="54" height="67"/>
-	<SubTexture name="A captial0000" x="705" y="501" width="45" height="59"/>
-	<SubTexture name="A captial0001" x="705" y="501" width="45" height="59"/>
-	<SubTexture name="A captial0002" x="751" y="501" width="45" height="59"/>
-	<SubTexture name="A captial0003" x="751" y="501" width="45" height="59"/>
+	<SubTexture name="A capital0000" x="705" y="501" width="45" height="59"/>
+	<SubTexture name="A capital0001" x="705" y="501" width="45" height="59"/>
+	<SubTexture name="A capital0002" x="751" y="501" width="45" height="59"/>
+	<SubTexture name="A capital0003" x="751" y="501" width="45" height="59"/>
 	<SubTexture name="B bold0000" x="709" y="142" width="46" height="70"/>
 	<SubTexture name="B bold0001" x="709" y="142" width="46" height="70"/>
 	<SubTexture name="B bold0002" x="756" y="142" width="46" height="70"/>

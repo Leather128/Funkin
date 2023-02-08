@@ -24,8 +24,6 @@ class StrumNote extends FlxSprite
 	public var mania_size:Array<String>;
 	public var keyCount:Int;
 
-	public var modAngle:Float = 0;
-
 	public var colorSwap:ColorSwap;
 
 	var noteColor:Array<Int> = [0, 0, 0];
@@ -65,8 +63,6 @@ class StrumNote extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		angle = modAngle;
-
 		if (resetAnim > 0)
 		{
 			resetAnim -= elapsed;

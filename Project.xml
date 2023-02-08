@@ -98,6 +98,9 @@
 	<haxedef name="hscriptPos" />
 
 	<haxelib name="polymod" />
+
+	<!-- haxelib git flixelTextureAtlas https://github.com/Smokey555/Flixel-TextureAtlas.git -->
+	<haxelib name="flixelTextureAtlas" />
 	
 	<haxelib name="discord_rpc" if="desktop" />
 	<haxelib name="linc_luajit" if="desktop" />

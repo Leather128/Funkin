@@ -4,6 +4,6 @@ end
 
 function beatHit(curBeat)
     if get('girlfriend.animation.curAnim.name') == 'shoot2' then
-        playActorAnimation('girlfriend', 'shoot2', true, false, 23)
+        playAnimation('girlfriend', 'shoot2', true, false, 23)
     end
 end

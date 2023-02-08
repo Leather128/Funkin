@@ -2,7 +2,7 @@ function start(song)
     newText('yourMom', 'i am a little goofy', 0, 0, 16)
     set('yourMom.borderColor', color(0, 0, 0))
     set('yourMom.borderStyle', "OUTLINE")
-    setObjectCamera('yourMom', 'hud')
+    setCamera('yourMom', 'hud')
     add('yourMom')
 
     tween("yourMom", { x = 640, y = 360 }, 2, "linear", 0, function()
@@ -10,4 +10,6 @@ function start(song)
     end)
 
     loadScript("test-script")
+
+    print(exists('yourMom'))
 end

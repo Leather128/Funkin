@@ -1,5 +1,6 @@
 package debuggers;
 
+import game.StageGroup;
 import flixel.ui.FlxButton;
 import openfl.events.IOErrorEvent;
 import openfl.events.Event;
@@ -28,8 +29,7 @@ using StringTools;
 /**
 	*DEBUG MODE
  */
-class AnimationDebug extends MusicBeatState
-{
+class AnimationDebug extends MusicBeatState {
 	var char:Character;
 	var animText:FlxText;
 	var animList:Array<String> = [];
@@ -38,8 +38,7 @@ class AnimationDebug extends MusicBeatState
 	var camFollow:FlxObject;
 	var _file:FileReference;
 
-	public function new(daAnim:String = 'spooky')
-	{
+	public function new(daAnim:String = 'spooky') {
 		super();
 		this.daAnim = daAnim;
 	}
@@ -53,13 +52,15 @@ class AnimationDebug extends MusicBeatState
 	var charDropDown:FlxUIDropDownMenuCustom;
 	var modDropDown:FlxUIDropDownMenuCustom;
 
+	var stage:StageGroup;
+	var stagePosition:FlxSprite;
+
 	/* CAMERA */
 	var gridCam:FlxCamera;
 	var charCam:FlxCamera;
 	var camHUD:FlxCamera;
 
-	override function create()
-	{
+	override function create() {
 		FlxG.mouse.visible = true;
 
 		gridCam = new FlxCamera();
@@ -85,20 +86,32 @@ class AnimationDebug extends MusicBeatState
 		gridBG.cameras = [gridCam];
 		add(gridBG);
 
+		stage = new StageGroup("stage");
+		add(stage);
+
+		stagePosition = new FlxSprite().makeGraphic(32, 32, 0xFFFF0000);
+		add(stagePosition);
+
 		char = new Character(0, 0, daAnim);
 		char.debugMode = true;
 		add(char);
 
 		animText = new FlxText(2, 2, 0, "BRUH BRUH BRUH: [0,0]", 20);
 		animText.scrollFactor.set();
-		animText.color = FlxColor.BLUE;
+		animText.color = FlxColor.WHITE;
+		animText.borderColor = FlxColor.BLACK;
+		animText.borderStyle = OUTLINE;
+		animText.borderSize = 2;
 		animText.cameras = [camHUD];
 		add(animText);
 
-		var moveText = new FlxText(2, 2, 0, "Use IJKL to move the camera\nE and Q to zoom the camera\nSHIFT for faster moving offset or camera\n", 20);
-		moveText.x = FlxG.width - moveText.width;
+		var moveText = new FlxText(4, 4, 0, "Use IJKL to move the camera\nE and Q to zoom the camera\nSHIFT for faster moving offset or camera\nZ to toggle the stage\nX to toggle playing side", 20);
+		moveText.x = FlxG.width - moveText.width - 4;
 		moveText.scrollFactor.set();
-		moveText.color = FlxColor.BLUE;
+		moveText.color = FlxColor.WHITE;
+		moveText.borderColor = FlxColor.BLACK;
+		moveText.borderStyle = OUTLINE;
+		moveText.borderSize = 2;
 		moveText.alignment = RIGHT;
 		moveText.cameras = [camHUD];
 		add(moveText);
@@ -114,11 +127,15 @@ class AnimationDebug extends MusicBeatState
 		charCam.follow(camFollow);
 
 		var characterData:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var position = stage.getCharacterPos(char.isPlayer ? 0 : 1, char);
+		char.setPosition(position[0], position[1]);
 
-		char.screenCenter();
+		if (char.isPlayer)
+			stagePosition.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+		else
+			stagePosition.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
 
-		for (item in characterData)
-		{
+		for (item in characterData) {
 			var characterDataVal:Array<String> = item.split(":");
 
 			var charName:String = characterDataVal[0];
@@ -137,8 +154,7 @@ class AnimationDebug extends MusicBeatState
 
 		curCharList = characters.get("default");
 
-		charDropDown = new FlxUIDropDownMenuCustom(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true), function(character:String)
-		{
+		charDropDown = new FlxUIDropDownMenuCustom(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true), function(character:String) {
 			remove(char);
 			char.kill();
 			char.destroy();
@@ -147,7 +163,15 @@ class AnimationDebug extends MusicBeatState
 			char = new Character(0, 0, daAnim);
 			char.debugMode = true;
 			add(char);
-			char.screenCenter();
+
+			var position = stage.getCharacterPos(char.isPlayer ? 0 : 1, char);
+			char.setPosition(position[0], position[1]);
+
+			if (char.isPlayer)
+				stagePosition.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+			else
+				stagePosition.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+
 			animList = [];
 			genBoyOffsets(true);
 		});
@@ -158,28 +182,34 @@ class AnimationDebug extends MusicBeatState
 		add(charDropDown);
 
 		modDropDown = new FlxUIDropDownMenuCustom(charDropDown.x + charDropDown.width + 1, charDropDown.y,
-			FlxUIDropDownMenu.makeStrIdLabelArray(modListLmao, true), function(modID:String)
-		{
-			var mod:String = modListLmao[Std.parseInt(modID)];
+			FlxUIDropDownMenu.makeStrIdLabelArray(modListLmao, true), function(modID:String) {
+				var mod:String = modListLmao[Std.parseInt(modID)];
 
-			if (characters.exists(mod))
-			{
-				curCharList = characters.get(mod);
-				charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true));
-				charDropDown.selectedLabel = curCharList[0];
+				if (characters.exists(mod)) {
+					curCharList = characters.get(mod);
+					charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true));
+					charDropDown.selectedLabel = curCharList[0];
 
-				remove(char);
-				char.kill();
-				char.destroy();
+					remove(char);
+					char.kill();
+					char.destroy();
 
-				daAnim = curCharList[0];
-				char = new Character(0, 0, daAnim);
-				char.debugMode = true;
-				add(char);
-				char.screenCenter();
-				animList = [];
-				genBoyOffsets(true);
-			}
+					daAnim = curCharList[0];
+					char = new Character(0, 0, daAnim);
+					char.debugMode = true;
+					add(char);
+					
+					var position = stage.getCharacterPos(char.isPlayer ? 0 : 1, char);
+					char.setPosition(position[0], position[1]);
+			
+					if (char.isPlayer)
+						stagePosition.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+					else
+						stagePosition.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+
+					animList = [];
+					genBoyOffsets(true);
+				}
 		});
 
 		modDropDown.selectedLabel = "default";
@@ -187,8 +217,7 @@ class AnimationDebug extends MusicBeatState
 		modDropDown.cameras = [camHUD];
 		add(modDropDown);
 
-		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - 30, "Save Offsets", function()
-		{
+		offset_Button = new FlxButton(charDropDown.x, charDropDown.y - 30, "Save Offsets", function() {
 			saveOffsets();
 		});
 		offset_Button.scrollFactor.set();
@@ -198,30 +227,48 @@ class AnimationDebug extends MusicBeatState
 		super.create();
 	}
 
-	function genBoyOffsets(pushList:Bool = true):Void
-	{
+	function genBoyOffsets(pushList:Bool = true):Void {
 		animText.text = "";
 
-		for (anim => offsets in char.animOffsets)
-		{
+		for (anim => offsets in char.animOffsets) {
 			if (pushList)
 				animList.push(anim);
 
 			animText.text += anim + (anim == animList[curAnim] ? " (current) " : "") + ": " + offsets + "\n";
 		}
+
+		if ((char.offsetsFlipWhenPlayer && char.isPlayer) || (char.offsetsFlipWhenEnemy && !char.isPlayer))
+			animText.text += "(offsets flipped)";
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		if (FlxG.keys.justPressed.E)
 			charCam.zoom += 0.25;
 		if (FlxG.keys.justPressed.Q)
 			charCam.zoom -= 0.25;
+		if (FlxG.keys.justPressed.Z)
+			stage.visible = !stage.visible;
+		if (FlxG.keys.justPressed.X) {
+			char.isPlayer = !char.isPlayer;
+			char.flipX = !char.flipX;
+
+			var position = stage.getCharacterPos(char.isPlayer ? 0 : 1, char);
+			char.setPosition(position[0], position[1]);
+	
+			if (char.isPlayer)
+				stagePosition.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+			else
+				stagePosition.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+
+			char.loadOffsetFile(char.curCharacter);
+			char.playAnim(animList[curAnim], true);
+			animList = [];
+			genBoyOffsets(true);
+		}
 
 		var shiftThing:Int = FlxG.keys.pressed.SHIFT ? 5 : 1;
 
-		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
-		{
+		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L) {
 			if (FlxG.keys.pressed.I)
 				camFollow.velocity.y = -90 * shiftThing;
 			else if (FlxG.keys.pressed.K)
@@ -235,22 +282,18 @@ class AnimationDebug extends MusicBeatState
 				camFollow.velocity.x = 90 * shiftThing;
 			else
 				camFollow.velocity.x = 0;
-		}
-		else
-		{
+		} else {
 			camFollow.velocity.set();
 		}
 
-		if (FlxG.keys.justPressed.W)
-		{
+		if (FlxG.keys.justPressed.W) {
 			curAnim -= 1;
 		}
 
 		if (FlxG.keys.justPressed.ESCAPE)
 			FlxG.switchState(new MainMenuState());
 
-		if (FlxG.keys.justPressed.S)
-		{
+		if (FlxG.keys.justPressed.S) {
 			curAnim += 1;
 		}
 
@@ -260,10 +303,16 @@ class AnimationDebug extends MusicBeatState
 		if (curAnim >= animList.length)
 			curAnim = 0;
 
-		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
-		{
+		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE) {
 			char.playAnim(animList[curAnim], true);
-			char.screenCenter();
+			
+			var position = stage.getCharacterPos(char.isPlayer ? 0 : 1, char);
+			char.setPosition(position[0], position[1]);
+	
+			if (char.isPlayer)
+				stagePosition.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+			else
+				stagePosition.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
 
 			genBoyOffsets(false);
 		}
@@ -278,8 +327,7 @@ class AnimationDebug extends MusicBeatState
 		if (holdShift)
 			multiplier = 10;
 
-		if (upP || rightP || downP || leftP)
-		{
+		if (upP || rightP || downP || leftP) {
 			if (upP)
 				char.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
 			if (downP)
@@ -296,17 +344,15 @@ class AnimationDebug extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	function saveOffsets()
-	{
+	function saveOffsets() {
 		var offsetsText:String = "";
+		var flipped = (char.offsetsFlipWhenPlayer && char.isPlayer) || (char.offsetsFlipWhenEnemy && !char.isPlayer);
 
-		for (anim => offsets in char.animOffsets)
-		{
-			offsetsText += anim + " " + offsets[0] + " " + offsets[1] + "\n";
+		for (anim => offsets in char.animOffsets) {
+			offsetsText += anim + " " + (flipped ? -offsets[0] : offsets[0]) + " " + offsets[1] + "\n";
 		}
 
-		if ((offsetsText != "") && (offsetsText.length > 0))
-		{
+		if ((offsetsText != "") && (offsetsText.length > 0)) {
 			if (offsetsText.endsWith("\n"))
 				offsetsText = offsetsText.substr(0, offsetsText.length - 1);
 
@@ -319,8 +365,7 @@ class AnimationDebug extends MusicBeatState
 		}
 	}
 
-	function onSaveComplete(_):Void
-	{
+	function onSaveComplete(_):Void {
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
@@ -331,8 +376,7 @@ class AnimationDebug extends MusicBeatState
 	/**
 	 * Called when the save file dialog is cancelled.
 	 */
-	function onSaveCancel(_):Void
-	{
+	function onSaveCancel(_):Void {
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
@@ -342,8 +386,7 @@ class AnimationDebug extends MusicBeatState
 	/**
 	 * Called if there is an error while saving the gameplay recording.
 	 */
-	function onSaveError(_):Void
-	{
+	function onSaveError(_):Void {
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
 		_file.removeEventListener(Event.CANCEL, onSaveCancel);
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);

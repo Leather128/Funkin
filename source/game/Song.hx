@@ -7,15 +7,13 @@ import lime.utils.Assets;
 
 using StringTools;
 
-class Event
-{
+class Event {
 	public var name:String;
 	public var position:Float;
 	public var value:Float;
 	public var type:String;
 
-	public function new(name:String, pos:Float, value:Float, type:String)
-	{
+	public function new(name:String, pos:Float, value:Float, type:String) {
 		this.name = name;
 		this.position = pos;
 		this.value = value;
@@ -23,8 +21,7 @@ class Event
 	}
 }
 
-typedef SwagSong =
-{
+typedef SwagSong = {
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Float;
@@ -53,8 +50,7 @@ typedef SwagSong =
 	var player3:Null<String>;
 }
 
-class Song
-{
+class Song {
 	public var song:String;
 	public var notes:Array<SwagSection>;
 	public var bpm:Float;
@@ -70,39 +66,29 @@ class Song
 	public var keyCount:Null<Int> = 4;
 	public var playerKeyCount:Null<Int> = 4;
 
-	public function new(song, notes, bpm)
-	{
+	public function new(song, notes, bpm) {
 		this.song = song;
 		this.notes = notes;
 		this.bpm = bpm;
 	}
 
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
-	{
+	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong {
 		var original_Folder = folder;
-
 		folder = "song data/" + folder + "/";
-
 		var rawJson:String = "";
-
 		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 
-		if (rawJson != "")
-		{
-			while (!rawJson.endsWith("}"))
-			{
+		if (rawJson != "") {
+			while (!rawJson.endsWith("}")) {
 				rawJson = rawJson.substr(0, rawJson.length - 1);
 				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 			}
 
 			return parseJSONshit(rawJson);
-		}
-		else
-		{
+		} else {
 			rawJson = Assets.getText(Paths.json("song data/tutorial/tutorial")).trim();
 
-			while (!rawJson.endsWith("}"))
-			{
+			while (!rawJson.endsWith("}")) {
 				rawJson = rawJson.substr(0, rawJson.length - 1);
 				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 			}
@@ -111,19 +97,16 @@ class Song
 		}
 	}
 
-	public static function parseJSONshit(rawJson:String, ?originalSongName:String):SwagSong
-	{
+	public static function parseJSONshit(rawJson:String, ?originalSongName:String):SwagSong {
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 
 		if (Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
 
-		if (Std.string(swagShit.mania) != "null")
-		{
+		if (Std.string(swagShit.mania) != "null") {
 			// shaggy support pog
-			switch (swagShit.mania)
-			{
+			switch (swagShit.mania) {
 				case 0:
 					swagShit.keyCount = 4;
 				case 1:
@@ -166,15 +149,12 @@ class Song
 
 		var new_events:Array<Array<Dynamic>> = [];
 
-		for (event in swagShit.events)
-		{
+		for (event in swagShit.events) {
 			// aka, if(event == A Psych Engine Event Lmfao)
-			if (Std.isOfType(event[0], Float) || Std.isOfType(event[0], Int) && Std.isOfType(event[1], Array))
-			{
+			if (Std.isOfType(event[0], Float) || Std.isOfType(event[0], Int) && Std.isOfType(event[1], Array)) {
 				var event_datas:Array<Array<Dynamic>> = event[1];
 
-				for (actual_event_data in event_datas)
-				{
+				for (actual_event_data in event_datas) {
 					var new_event = [
 						Std.string(actual_event_data[0]),
 						event[0],
@@ -183,27 +163,22 @@ class Song
 					];
 					new_events.push(new_event);
 				}
-			}
-			else
+			} else
 				new_events.push(event);
 		}
 
-		if (swagShit.notes != null)
-		{
-			for (secNum in 0...swagShit.notes.length)
-			{
+		if (swagShit.notes != null) {
+			for (secNum in 0...swagShit.notes.length) {
 				var sec:SwagSection = swagShit.notes[secNum];
 
 				var i:Int = 0;
 				var notes:Array<Dynamic> = sec.sectionNotes;
 				var len:Int = notes.length;
 
-				while (i < len)
-				{
+				while (i < len) {
 					var note:Array<Dynamic> = notes[i];
 
-					if (note[1] < 0 && Std.isOfType(note[2], String))
-					{
+					if (note[1] < 0 && Std.isOfType(note[2], String)) {
 						if (note[3] == null)
 							note[3] = "";
 						if (note[4] == null)
@@ -212,8 +187,7 @@ class Song
 						new_events.push([note[2], note[0], note[3], note[4]]);
 						notes.remove(note);
 						len = notes.length;
-					}
-					else
+					} else
 						i++;
 				}
 			}
