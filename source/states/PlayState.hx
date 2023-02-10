@@ -991,15 +991,17 @@ class PlayState extends MusicBeatState {
 		healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
 		healthBar.pixelPerfectPosition = true;
 		add(healthBar);
-
 		// icons
-		iconP1 = new HealthIcon(boyfriend.icon, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2) - iconP1.offsetY;
-		add(iconP1);
+		if (Options.getData("healthIcons"))
+			{
+			iconP1 = new HealthIcon(boyfriend.icon, true);
+			iconP1.y = healthBar.y - (iconP1.height / 2) - iconP1.offsetY;
+			add(iconP1);
 
-		iconP2 = new HealthIcon(dad.icon, false);
-		iconP2.y = healthBar.y - (iconP2.height / 2) - iconP2.offsetY;
-		add(iconP2);
+			iconP2 = new HealthIcon(dad.icon, false);
+			iconP2.y = healthBar.y - (iconP2.height / 2) - iconP2.offsetY;
+			add(iconP2);
+			}
 
 		// settings moment
 		var scoreTxtSize:Int = Options.getData("biggerScoreInfo") ? 20 : 16;
@@ -1128,10 +1130,12 @@ class PlayState extends MusicBeatState {
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
-
+		if (Options.getData("healthIcons"))
+			{
+				iconP1.cameras = [camHUD];
+				iconP2.cameras = [camHUD];
+			}
 		startingSong = true;
 
 		// WINDOW TITLE POG
@@ -1447,54 +1451,111 @@ class PlayState extends MusicBeatState {
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[0], 'shared'));
-					ready.scrollFactor.set();
-					ready.updateHitbox();
+					if (Options.getData("introIsOptimized"))
+					{
+						var ready:FlxText = new FlxText(0,0,0,"Ready?", 50);
+						ready.scrollFactor.set();
+						ready.updateHitbox();
+	
+						ready.setGraphicSize(Std.int(ready.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+						ready.updateHitbox();
+	
+						ready.screenCenter();
+						add(ready);
+						FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+							ease: FlxEase.cubeInOut,
+							onComplete: function(twn:FlxTween) ready.destroy()
+						});
+					}
+					else
+					{
+						var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[0], 'shared'));
+						ready.scrollFactor.set();
+						ready.updateHitbox();
 
-					ready.setGraphicSize(Std.int(ready.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
-					ready.updateHitbox();
+						ready.setGraphicSize(Std.int(ready.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+						ready.updateHitbox();
 
-					ready.screenCenter();
-					add(ready);
+						ready.screenCenter();
+						add(ready);
 
-					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween) ready.destroy()
-					});
+						FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+							ease: FlxEase.cubeInOut,
+							onComplete: function(twn:FlxTween) ready.destroy()
+						});
+					}
 
 					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[1], 'shared'));
-					set.scrollFactor.set();
-					set.updateHitbox();
-
-					set.setGraphicSize(Std.int(set.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
-					set.updateHitbox();
-
-					set.screenCenter();
-					add(set);
-
-					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween) set.destroy()
-					});
+					if (Options.getData("introIsOptimized"))
+						{
+							var set:FlxText = new FlxText(0,0,0,"Set!?", 50);
+							set.scrollFactor.set();
+							set.updateHitbox();
+		
+							set.setGraphicSize(Std.int(set.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+							set.updateHitbox();
+		
+							set.screenCenter();
+							add(set);
+							FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween) set.destroy()
+							});
+						}
+						else
+						{
+							var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[1], 'shared'));
+							set.scrollFactor.set();
+							set.updateHitbox();
+		
+							set.setGraphicSize(Std.int(set.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+							set.updateHitbox();
+		
+							set.screenCenter();
+							add(set);
+		
+							FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween) set.destroy()
+							});
+						}
 
 					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[2], 'shared'));
-					go.scrollFactor.set();
-					go.updateHitbox();
-
-					go.setGraphicSize(Std.int(go.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
-					go.updateHitbox();
-
-					go.screenCenter();
-					add(go);
-
-					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween) go.destroy()
-					});
+					if (Options.getData("introIsOptimized"))
+						{
+							var go:FlxText = new FlxText(0,0,0,"Go!!", 50);
+							go.scrollFactor.set();
+							go.updateHitbox();
+		
+							go.setGraphicSize(Std.int(go.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+							go.updateHitbox();
+		
+							go.screenCenter();
+							add(go);
+							FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween) go.destroy()
+							});
+						}
+						else
+						{
+							var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[2], 'shared'));
+							go.scrollFactor.set();
+							go.updateHitbox();
+		
+							go.setGraphicSize(Std.int(go.width * Std.parseFloat(ui_settings[0]) * Std.parseFloat(ui_settings[7])));
+							go.updateHitbox();
+		
+							go.screenCenter();
+							add(go);
+		
+							FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween) go.destroy()
+							});
+						}
 
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
@@ -1905,31 +1966,32 @@ class PlayState extends MusicBeatState {
 
 		var icon_Zoom_Lerp = elapsed * 9;
 		var camera_Zoom_Lerp = elapsed * 3;
+		if (Options.getData("healthIcons"))
+		{
+			iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, iconP1.startSize, icon_Zoom_Lerp * songMultiplier),
+				FlxMath.lerp(iconP1.scale.y, iconP1.startSize, icon_Zoom_Lerp * songMultiplier));
+			iconP2.scale.set(FlxMath.lerp(iconP2.scale.x, iconP2.startSize, icon_Zoom_Lerp * songMultiplier),
+				FlxMath.lerp(iconP2.scale.y, iconP2.startSize, icon_Zoom_Lerp * songMultiplier));
 
-		iconP1.scale.set(FlxMath.lerp(iconP1.scale.x, iconP1.startSize, icon_Zoom_Lerp * songMultiplier),
-			FlxMath.lerp(iconP1.scale.y, iconP1.startSize, icon_Zoom_Lerp * songMultiplier));
-		iconP2.scale.set(FlxMath.lerp(iconP2.scale.x, iconP2.startSize, icon_Zoom_Lerp * songMultiplier),
-			FlxMath.lerp(iconP2.scale.y, iconP2.startSize, icon_Zoom_Lerp * songMultiplier));
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+			iconP1.scale.set(CoolUtil.boundTo(iconP1.scale.x, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2),
+				CoolUtil.boundTo(iconP1.scale.y, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2));
+			iconP2.scale.set(CoolUtil.boundTo(iconP2.scale.x, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2),
+				CoolUtil.boundTo(iconP2.scale.y, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2));
 
-		iconP1.scale.set(CoolUtil.boundTo(iconP1.scale.x, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2),
-			CoolUtil.boundTo(iconP1.scale.y, Math.NEGATIVE_INFINITY, iconP1.startSize + 0.2));
-		iconP2.scale.set(CoolUtil.boundTo(iconP2.scale.x, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2),
-			CoolUtil.boundTo(iconP2.scale.y, Math.NEGATIVE_INFINITY, iconP2.startSize + 0.2));
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+			var iconOffset:Int = 26;
 
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (iconP2.width - iconOffset)
-			- iconP2.offsetX;
-
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		}
 		if (Options.getData("cameraZooms") && camZooming && !switchedStates) {
 			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, camera_Zoom_Lerp);
 			camHUD.zoom = FlxMath.lerp(camHUD.zoom, defaultHudCamZoom, camera_Zoom_Lerp);
@@ -1989,33 +2051,33 @@ class PlayState extends MusicBeatState {
 			healthShown = maxHealth - health;
 		else
 			healthShown = health;
+		if (Options.getData("healthIcons"))
+		{
+			if (healthBar.percent < 20) {
+				if (!iconP1.animatedIcon)
+					iconP1.animation.curAnim.curFrame = 1;
+				if (!iconP2.animatedIcon)
+					iconP2.animation.curAnim.curFrame = 2;
 
-		if (healthBar.percent < 20) {
-			if (!iconP1.animatedIcon)
-				iconP1.animation.curAnim.curFrame = 1;
-			if (!iconP2.animatedIcon)
-				iconP2.animation.curAnim.curFrame = 2;
+				if (iconP2.animation.curAnim.curFrame != 2 && !iconP2.animatedIcon)
+					iconP2.animation.curAnim.curFrame = 0;
+			} else {
+				if (!iconP1.animatedIcon)
+					iconP1.animation.curAnim.curFrame = 0;
 
-			if (iconP2.animation.curAnim.curFrame != 2 && !iconP2.animatedIcon)
-				iconP2.animation.curAnim.curFrame = 0;
-		} else {
-			if (!iconP1.animatedIcon)
-				iconP1.animation.curAnim.curFrame = 0;
+				if (!iconP2.animatedIcon)
+					iconP2.animation.curAnim.curFrame = 0;
+			}
+			if (healthBar.percent > 80) {
+				if (!iconP2.animatedIcon)
+					iconP2.animation.curAnim.curFrame = 1;
+				if (!iconP1.animatedIcon)
+					iconP1.animation.curAnim.curFrame = 2;
 
-			if (!iconP2.animatedIcon)
-				iconP2.animation.curAnim.curFrame = 0;
+				if (iconP1.animation.curAnim.curFrame != 2 && !iconP1.animatedIcon)
+					iconP1.animation.curAnim.curFrame = 0;
+				}
 		}
-
-		if (healthBar.percent > 80) {
-			if (!iconP2.animatedIcon)
-				iconP2.animation.curAnim.curFrame = 1;
-			if (!iconP1.animatedIcon)
-				iconP1.animation.curAnim.curFrame = 2;
-
-			if (iconP1.animation.curAnim.curFrame != 2 && !iconP1.animatedIcon)
-				iconP1.animation.curAnim.curFrame = 0;
-		}
-
 		if (!switchedStates) {
 			if (startingSong) {
 				if (startedCountdown) {
@@ -2027,6 +2089,7 @@ class PlayState extends MusicBeatState {
 			} else
 				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 		}
+		
 
 		if (generatedMusic
 			&& PlayState.SONG.notes[Std.int(curStep / Conductor.stepsPerSection)] != null
@@ -2546,9 +2609,12 @@ class PlayState extends MusicBeatState {
 				healthBarBG.visible = false;
 				infoTxt.visible = false;
 				healthBar.visible = false;
-				iconP1.visible = false;
-				iconP2.visible = false;
 				scoreTxt.visible = false;
+				if (Options.getData("healthIcons"))
+				{
+					iconP1.visible = false;
+					iconP2.visible = false;
+				}
 
 				if (Options.getData("sideRatings"))
 					ratingText.visible = false;
@@ -2559,10 +2625,12 @@ class PlayState extends MusicBeatState {
 				healthBarBG.visible = true;
 				infoTxt.visible = true;
 				healthBar.visible = true;
-				iconP1.visible = true;
-				iconP2.visible = true;
 				scoreTxt.visible = true;
-
+				if (Options.getData("healthIcons"))
+					{
+						iconP1.visible = true;
+						iconP2.visible = true;
+					}
 				if (Options.getData("sideRatings"))
 					ratingText.visible = true;
 
@@ -3612,23 +3680,24 @@ class PlayState extends MusicBeatState {
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
+		if (Options.getData("healthIcons"))
+		{
+			iconP1.scale.set(iconP1.scale.x + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)),
+				iconP1.scale.y + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)));
+			iconP2.scale.set(iconP2.scale.x + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)),
+				iconP2.scale.y + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)));
 
-		iconP1.scale.set(iconP1.scale.x + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)),
-			iconP1.scale.y + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)));
-		iconP2.scale.set(iconP2.scale.x + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)),
-			iconP2.scale.y + (0.2 / (songMultiplier < 1 ? 1 : songMultiplier)));
+			iconP1.updateHitbox();
+			iconP2.updateHitbox();
 
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+			var iconOffset:Int = 26;
 
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (iconP2.width - iconOffset)
-			- iconP2.offsetX;
-
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		}
 		if (gfSpeed < 1)
 			gfSpeed = 1;
 
@@ -3950,10 +4019,11 @@ class PlayState extends MusicBeatState {
 					@:privateAccess
 					{
 						var bar = PlayState.instance.healthBar;
-
-						iconP2.scale.set(1, 1);
-						iconP2.changeIconSet(dad.icon);
-
+						if (Options.getData("healthIcons"))
+						{
+							iconP2.scale.set(1, 1);
+							iconP2.changeIconSet(dad.icon);
+						}
 						bar.createFilledBar(dad.barColor, boyfriend.barColor);
 						bar.updateFilledBar();
 					}
@@ -3996,10 +4066,11 @@ class PlayState extends MusicBeatState {
 					@:privateAccess
 					{
 						var bar = PlayState.instance.healthBar;
-
-						iconP1.scale.set(1, 1);
-						iconP1.changeIconSet(boyfriend.icon);
-
+						if (Options.getData("healthIcons"))
+						{
+							iconP1.scale.set(1, 1);
+							iconP1.changeIconSet(boyfriend.icon);
+						}
 						bar.createFilledBar(dad.barColor, boyfriend.barColor);
 						bar.updateFilledBar();
 					}

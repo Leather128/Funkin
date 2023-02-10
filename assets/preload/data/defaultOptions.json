@@ -201,6 +201,10 @@
             "value": false
         },
         {
+            "option": "introIsOptimized",
+            "value": false
+        },
+        {
             "option": "animatedBGs",
             "value": true
         },
