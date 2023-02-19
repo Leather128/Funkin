@@ -255,6 +255,10 @@
             "option": "save",
             "value": "{}",
             "save": "autosave"
+        },
+        {
+            "option": "health",
+            "value": true
         }
     ]
 }
