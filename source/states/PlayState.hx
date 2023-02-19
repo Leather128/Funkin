@@ -983,6 +983,7 @@ class PlayState extends MusicBeatState {
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		healthBarBG.pixelPerfectPosition = true;
+		healthBarBG.visible = false;
 		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
@@ -990,7 +991,14 @@ class PlayState extends MusicBeatState {
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
 		healthBar.pixelPerfectPosition = true;
+		healthBar.visible = false;
 		add(healthBar);
+
+		// check if it can stay
+		if (Options.getData("health")) {
+			healthBar.visible = true;
+			healthBarBG.visible = true;
+		}
 
 		// icons
 		iconP1 = new HealthIcon(boyfriend.icon, true);
@@ -1930,11 +1938,19 @@ class PlayState extends MusicBeatState {
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (iconP2.width - iconOffset)
-			- iconP2.offsetX;
+		if (Options.getData("health")) {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		} else {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		}
 
 		if (Options.getData("cameraZooms") && camZooming && !switchedStates) {
 			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom, defaultCamZoom, camera_Zoom_Lerp);
@@ -2741,7 +2757,7 @@ class PlayState extends MusicBeatState {
 				prevCamFollow = camFollow;
 
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-				
+
 				if (vocals != null && vocals.active)
 					vocals.stop();
 				if (FlxG.sound.music != null && FlxG.sound.music.active)
@@ -3641,11 +3657,19 @@ class PlayState extends MusicBeatState {
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x
-			+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
-			- (iconP2.width - iconOffset)
-			- iconP2.offsetX;
+		if (Options.getData("health")) {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		} else {
+			iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+			iconP2.x = healthBar.x
+				+ (healthBar.width * (FlxMath.remapToRange(50, 0, 100, 100, 0) * 0.01))
+				- (iconP2.width - iconOffset)
+				- iconP2.offsetX;
+		}
 
 		if (gfSpeed < 1)
 			gfSpeed = 1;
@@ -4132,8 +4156,7 @@ class PlayState extends MusicBeatState {
 	public function processEvent(event:Array<Dynamic>) {
 		#if linc_luajit
 		if (!event_luas.exists(event[0].toLowerCase()) && Assets.exists(Paths.lua("event data/" + event[0].toLowerCase()))) {
-			event_luas.set(event[0].toLowerCase(),
-				new ModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
+			event_luas.set(event[0].toLowerCase(), new ModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
 			generatedSomeDumbEventLuas = true;
 
 			for (i in 0...strumLineNotes.length) {
@@ -4423,8 +4446,7 @@ class PlayState extends MusicBeatState {
 
 			#if linc_luajit
 			if (!event_luas.exists(event[0].toLowerCase()) && Assets.exists(Paths.lua("event data/" + event[0].toLowerCase()))) {
-				event_luas.set(event[0].toLowerCase(),
-					new ModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
+				event_luas.set(event[0].toLowerCase(), new ModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
 				generatedSomeDumbEventLuas = true;
 			}
 			#end
