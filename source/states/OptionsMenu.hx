@@ -79,6 +79,9 @@ class OptionsMenu extends MusicBeatState {
 			#end
 			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
 			new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
+			#if MODCHARTING_TOOLS
+			new GameStateOption("Modchart Editor", 4, new modcharting.ModchartEditorState()),
+			#end
 			// new GameStateOption("Character Creator", 4, new CharacterCreationState("bf")),
 			new GameSubstateOption("Import Old Scores", 5, substates.ImportHighscoresSubstate)
 		],

@@ -1,5 +1,6 @@
 package states;
 
+import modcharting.ModchartEditorState;
 import flixel.group.FlxSpriteGroup;
 #if sys
 import sys.FileSystem;
@@ -2508,6 +2509,29 @@ class PlayState extends MusicBeatState {
 				DiscordClient.changePresence("Chart Editor Development", null, null, true);
 				#end
 			}
+			#if MODCHARTING_TOOLS
+			if (FlxG.keys.justPressed.NINE && !switchedStates && !inCutscene) {
+				#if linc_luajit
+				if (executeModchart && luaModchart != null) {
+					luaModchart.die();
+					luaModchart = null;
+				}
+				#end
+
+				switchedStates = true;
+
+				vocals.stop();
+
+				SONG.keyCount = ogKeyCount;
+				SONG.playerKeyCount = ogPlayerKeyCount;
+
+				FlxG.switchState(new modcharting.ModchartEditorState());
+
+				#if discord_rpc
+				DiscordClient.changePresence("Modchart Editor", null, null, true);
+				#end
+			}
+			#end
 			// #end
 		}
 
