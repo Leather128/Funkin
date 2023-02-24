@@ -85,6 +85,7 @@ jobs:
           haxelib install polymod
           haxelib git openfl https://github.com/openfl/openfl
           haxelib git flixelTextureAtlas https://github.com/Smokey555/Flixel-TextureAtlas.git
+          haxelib git fnf-modcharting-tools https://github.com/TheZoroForce240/FNF-Modcharting-Tools
           haxelib list
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
